@@ -10,6 +10,17 @@ const { exec } = require('child_process');
 //         return;
 //     }
 
+exec('git status', (error, stdout, stderr) => {
+  if (error) {
+    console.error(`检查 Git 状态时出错: ${error}`);
+    return;
+  }
+  console.log('当前 Git 状态:\n', stdout);
+
+  // 根据需要继续执行其他 Git 命令
+  // checkBranchAndProceed();
+});
+
 // 检查 Git 用户信息
 exec('git config user.name && git config user.email', (error, stdout) => {
   if (error || !stdout) {
