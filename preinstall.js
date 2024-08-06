@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 
-exec('git fetch --all && git branch -r', (lsError, lsStdout, lsStderr) => {
+exec('git --config-env=http.extraheader=env_var_http.extraheader fetch --all && git branch -r', (lsError, lsStdout, lsStderr) => {
     if (lsError) {
         console.error(`git fetch --all && git branch -r: ${lsError.message}`);
         return;
