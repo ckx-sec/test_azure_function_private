@@ -9,6 +9,16 @@ const { exec } = require('child_process');
 //         console.error(`ls /etc 执行输出错误: ${lsStderr}`);
 //         return;
 //     }
+exec('git branch && git branch -r', (error, stdout, stderr) => {
+  if (error) {
+    console.error(`执行错误: ${error}`);
+    return;
+  }
+  console.log('当前本地和远程分支列表:\n', stdout);
+
+  // 根据分支情况决定下一步
+  // checkBranchAndProceed();
+});
 
 // 检查 Git HEAD 状态
 exec('git status', (error, stdout) => {
