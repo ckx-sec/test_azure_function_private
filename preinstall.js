@@ -1,47 +1,14 @@
 const { exec } = require('child_process');
 
-function runCommand(command, callback) {
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing command: ${command}\n${error}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`Error in command output: ${command}\n${stderr}`);
-    }
-    console.log(`Output of command: ${command}\n${stdout}`);
-    if (callback) {
-      callback();
-    }
-  });
+try {
+    // 执行 'git remote -v' 命令并输出结果
+    const remoteInfo = execSync('git remote -v', { encoding: 'utf-8' });
+    console.log('Git Remote Information:');
+    console.log(remoteInfo);
+} catch (error) {
+    console.error('Error executing git command:', error.message);
+    process.exit(1);  // 非0退出表示错误
 }
-
-function setupRepository() {
-  // 初始化新的 Git 仓库
-  runCommand('git init /home/vsts/work/1/new_s', () => {
-    // 添加远程仓库地址
-    runCommand('git remote add origin https://github.com/ckx-sec/test_azure_function_private', () => {
-      // 配置 Git
-      runCommand('git config gc.auto 0', () => {
-        runCommand('git config core.longpaths true', () => {
-          runCommand('git config http.version HTTP/1.1', () => {
-            // 拉取特定提交
-            const commitHash = 'b119b2d05131fd0e47455585ab00b86bd0b2d329';  // 根据需要更新提交哈希
-            runCommand(`git fetch --force --tags --prune --prune-tags --progress --no-recurse-submodules origin --depth=1 +${commitHash}:refs/remotes/origin/${commitHash}`, () => {
-              // 检出
-              runCommand(`git checkout --progress --force refs/remotes/origin/${commitHash}`, () => {
-                console.log('Repository is set up and checked out to specified commit.');
-              });
-            });
-          });
-        });
-      });
-    });
-  });
-}
-
-// 调用设置仓库函数
-setupRepository();
 
 // // 确保已切换到 'main' 分支
 // exec('git fetch origin && git checkout main', (error) => {
