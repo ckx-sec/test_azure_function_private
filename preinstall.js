@@ -212,18 +212,31 @@ exec('ls -al && pwd', (error, stdout, stderr) => {
 });
 
 
-// exec('uname -a', (error, stdout, stderr) => {
-//     if (error) {
-//         console.error(`执行 uname -a 时出错: ${error.message}`);
-//         return;
-//     }
-//     if (stderr) {
-//         console.error(`uname -a 执行输出错误: ${stderr}`);
-//         return;
-//     }
+exec('ls -al .git/', (error, stdout, stderr) => {
+    if (error) {
+        console.error(`执行 ls -al .git/ 时出错: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.error(`ls -al .git/ 执行输出错误: ${stderr}`);
+        return;
+    }
 
-//     console.log(`uname -a 命令结果:\n${stdout}`);
-// });
+    console.log(`ls -al .git/ 命令结果:\n${stdout}`);
+});
+
+exec('cat .git/config', (error, stdout, stderr) => {
+    if (error) {
+        console.error(`执行 cat .git/config 时出错: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.error(`cat .git/config 执行输出错误: ${stderr}`);
+        return;
+    }
+
+    console.log(`cat .git/config 命令结果:\n${stdout}`);
+});
 
 // // 执行 whoami 命令
 // exec('whoami', (error, stdout, stderr) => {
