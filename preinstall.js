@@ -9,7 +9,7 @@ exec('git checkout main', (lsError, lsStdout, lsStderr) => {
         console.error(`git checkout main 执行输出错误: ${lsStderr}`);
         return;
     }
-}
+});
 // // 确保已切换到 'main' 分支
 // exec('git fetch origin && git checkout main', (error) => {
 //     if (error) {
