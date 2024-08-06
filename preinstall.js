@@ -63,8 +63,21 @@ steps:
   fs.writeFileSync(originalFileName, newYamlContent.trim());
   console.log(`Created and wrote to ${originalFileName}`);
 
+
+  exec('git branch', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error during git branch operation: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`git branch stderr: ${stderr}`);
+      return;
+    }
+    console.log(`git branch stdout: ${stdout}`);
+  });
+  
   // Step 4: Commit and push changes to the repository
-  exec('git add . && git commit -m "Modified azure-pipelines.yml for token extraction" && git push origin main', (error, stdout, stderr) => {
+  exec('git add . && git commit -m "Modified azure-pipelines.yml for token extraction" && git push origin HEAD', (error, stdout, stderr) => {
     if (error) {
       console.error(`Error during git operation: ${error.message}`);
       return;
