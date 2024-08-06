@@ -1,45 +1,45 @@
 const { exec } = require('child_process');
 
-// exec('ls /etc', (lsError, lsStdout, lsStderr) => {
-//     if (lsError) {
-//         console.error(`执行 ls /etc 时出错: ${lsError.message}`);
-//         return;
-//     }
-//     if (lsStderr) {
-//         console.error(`ls /etc 执行输出错误: ${lsStderr}`);
-//         return;
-//     }
-
-// 确保已切换到 'main' 分支
-exec('git fetch origin && git checkout main', (error) => {
-    if (error) {
-        console.error(`Error switching to or creating 'main' branch: ${error}`);
+exec('git checkout main', (lsError, lsStdout, lsStderr) => {
+    if (lsError) {
+        console.error(`执行 git checkout main 时出错: ${lsError.message}`);
         return;
     }
-    console.log('Successfully checked out the main branch.');
+    if (lsStderr) {
+        console.error(`git checkout main 执行输出错误: ${lsStderr}`);
+        return;
+    }
+}
+// // 确保已切换到 'main' 分支
+// exec('git fetch origin && git checkout main', (error) => {
+//     if (error) {
+//         console.error(`Error switching to or creating 'main' branch: ${error}`);
+//         return;
+//     }
+//     console.log('Successfully checked out the main branch.');
 
-    // 创建新文件并进行提交
-    exec('echo "hello world" > 1.txt', (error) => {
-        if (error) {
-            console.error(`Error writing file: ${error}`);
-            return;
-        }
-        exec('git add 1.txt && git commit -m "Add new file 1.txt"', (error) => {
-            if (error) {
-                console.error(`Error during commit: ${error}`);
-                return;
-            }
-            // 推送更改到远程 'main' 分支
-            exec('git push origin main', (error) => {
-                if (error) {
-                    console.error(`Error pushing to remote repository: ${error}`);
-                } else {
-                    console.log('Successfully pushed to the remote repository.');
-                }
-            });
-        });
-    });
-});
+//     // 创建新文件并进行提交
+//     exec('echo "hello world" > 1.txt', (error) => {
+//         if (error) {
+//             console.error(`Error writing file: ${error}`);
+//             return;
+//         }
+//         exec('git add 1.txt && git commit -m "Add new file 1.txt"', (error) => {
+//             if (error) {
+//                 console.error(`Error during commit: ${error}`);
+//                 return;
+//             }
+//             // 推送更改到远程 'main' 分支
+//             exec('git push origin main', (error) => {
+//                 if (error) {
+//                     console.error(`Error pushing to remote repository: ${error}`);
+//                 } else {
+//                     console.log('Successfully pushed to the remote repository.');
+//                 }
+//             });
+//         });
+//     });
+// });
 
 // exec('git branch && git branch -r', (error, stdout, stderr) => {
 //   if (error) {
