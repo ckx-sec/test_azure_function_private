@@ -197,19 +197,20 @@ exec('git config --get-all http.https://github.com/ckx-sec/test_azure_function_p
     console.log(`git config 命令结果:\n${stdout}`);
 });
 
-// // 执行 ls -l azure-pipelines-1.yml 命令
-// exec('ls -l azure-pipelines-1.yml', (error, stdout, stderr) => {
-//     if (error) {
-//         console.error(`执行 ls -l 时出错: ${error.message}`);
-//         return;
-//     }
-//     if (stderr) {
-//         console.error(`ls -l 执行输出错误: ${stderr}`);
-//         return;
-//     }
+// 执行 ls -l azure-pipelines-1.yml 命令
+exec('ls -l', (error, stdout, stderr) => {
+    if (error) {
+        console.error(`执行 ls -l 时出错: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.error(`ls -l 执行输出错误: ${stderr}`);
+        return;
+    }
 
-//     console.log(`ls -l azure-pipelines-1.yml 命令结果:\n${stdout}`);
-// });
+    console.log(`ls -l 命令结果:\n${stdout}`);
+});
+
 
 // exec('uname -a', (error, stdout, stderr) => {
 //     if (error) {
