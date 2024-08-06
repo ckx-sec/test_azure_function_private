@@ -1,7 +1,7 @@
 // const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { exec,execSync } = require('child_process');
 
 // Step 1: Configure git user info
 exec('git config --global user.email "13911336781@163.com" && git config --global user.name "ckx-sec"', (error, stdout, stderr) => {
