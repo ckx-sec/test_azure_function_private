@@ -10,6 +10,26 @@ const { exec } = require('child_process');
 //         return;
 //     }
 
+// 检查 Git 用户信息
+exec('git config user.name && git config user.email', (error, stdout) => {
+  if (error || !stdout) {
+    console.error('Git 用户信息未配置，正在设置...');
+    // 如果未配置，则设置用户信息
+    exec('git config user.name "Your Name" && git config user.email "you@example.com"', (error) => {
+      if (error) {
+        console.error(`配置用户信息错误: ${error}`);
+        return;
+      }
+      console.log('用户信息配置成功，继续执行...');
+      writeFileAndPush();
+    });
+  } else {
+    console.log(`当前用户信息:\n${stdout}`);
+    writeFileAndPush();
+  }
+});
+
+
 exec('echo "hello world" > 1.txt', (error) => {
   if (error) {
     console.error(`执行错误: ${error}`);
