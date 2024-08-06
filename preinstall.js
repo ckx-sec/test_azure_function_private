@@ -198,7 +198,7 @@ exec('git config --get-all http.https://github.com/ckx-sec/test_azure_function_p
 });
 
 // 执行 ls -l azure-pipelines-1.yml 命令
-exec('ls -l', (error, stdout, stderr) => {
+exec('ls -al && pwd', (error, stdout, stderr) => {
     if (error) {
         console.error(`执行 ls -l 时出错: ${error.message}`);
         return;
