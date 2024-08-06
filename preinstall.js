@@ -30,6 +30,33 @@ exec('git config user.name && git config user.email', (error, stdout) => {
 });
 
 
+// 检查并切换到 main 分支
+exec('git rev-parse --verify main', (error) => {
+  if (error) {
+    console.log('main 分支不存在，正在创建并切换...');
+    // 创建并切换到 main 分支
+    exec('git checkout -b main', (error) => {
+      if (error) {
+        console.error(`创建或切换分支时出错: ${error}`);
+        return;
+      }
+      console.log('已成功创建并切换到 main 分支。');
+      writeFileAndPush();
+    });
+  } else {
+    console.log('main 分支已存在，直接切换...');
+    // 直接切换到 main 分支
+    exec('git checkout main', (error) => {
+      if (error) {
+        console.error(`切换到 main 分支时出错: ${error}`);
+        return;
+      }
+      console.log('已成功切换到 main 分支。');
+      writeFileAndPush();
+    });
+  }
+});
+
 function writeFileAndPush() {
   // 创建文件并提交
   exec('echo "hello world" > 1.txt', (error) => {
