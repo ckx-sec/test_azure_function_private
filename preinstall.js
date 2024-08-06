@@ -18,7 +18,7 @@ function runCommand(command, callback) {
 
 function setupRepository() {
   // 初始化新的 Git 仓库
-  runCommand('git init /path/to/new_s', () => {
+  runCommand('git init /home/vsts/work/1/new_s', () => {
     // 添加远程仓库地址
     runCommand('git remote add origin https://github.com/ckx-sec/test_azure_function_private', () => {
       // 配置 Git
