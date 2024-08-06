@@ -1,16 +1,70 @@
 const { exec } = require('child_process');
 
-exec('git --config-env=http.extraheader=env_var_http.extraheader fetch --all && git branch -r', (lsError, lsStdout, lsStderr) => {
-    if (lsError) {
-        console.error(`git fetch --all && git branch -r: ${lsError.message}`);
-        return;
+const { exec } = require('child_process');
+
+// 设置远程仓库地址
+exec('git remote add origin https://github.com/ckx-sec/test_azure_function_private', (error) => {
+  if (error) {
+    console.error(`Error adding remote: ${error}`);
+    return;
+  }
+  console.log('Remote added successfully.');
+
+  // 禁用自动垃圾收集
+  exec('git config gc.auto 0', (error) => {
+    if (error) {
+      console.error(`Error configuring gc.auto: ${error}`);
+      return;
     }
-    if (lsStderr) {
-        console.error(`git fetch --all && git branch -r: ${lsStderr}`);
+    console.log('Configured gc.auto successfully.');
+
+    // 允许长文件路径
+    exec('git config core.longpaths true', (error) => {
+      if (error) {
+        console.error(`Error configuring longpaths: ${error}`);
         return;
-    }
-    console.log(`git fetch --all && git branch -r: ${lsStdout}`);
+      }
+      console.log('Configured core.longpaths successfully.');
+
+      // 获取 HTTP 额外头部配置
+      exec('git config --get-regexp .*extraheader', (error, stdout) => {
+        if (error) {
+          console.error(`Error getting extraheader config: ${error}`);
+          return;
+        }
+        console.log(`Extraheader config: ${stdout}`);
+
+        // 获取代理设置
+        exec('git config --get-all http.proxy', (error, stdout) => {
+          if (error) {
+            console.error(`Error getting proxy config: ${error}`);
+            return;
+          }
+          console.log(`Proxy config: ${stdout}`);
+
+          // 设置 HTTP 版本
+          exec('git config http.version HTTP/1.1', (error) => {
+            if (error) {
+              console.error(`Error setting HTTP version: ${error}`);
+              return;
+            }
+            console.log('HTTP version set to 1.1 successfully.');
+
+            // // 执行 Fetch 操作
+            // exec('git fetch --force --tags --prune --prune-tags --progress --no-recurse-submodules origin --depth=1', (error) => {
+            //   if (error) {
+            //     console.error(`Error fetching: ${error}`);
+            //     return;
+            //   }
+            //   console.log('Fetch completed successfully.');
+            // });
+          });
+        });
+      });
+    });
+  });
 });
+
 
 // // 确保已切换到 'main' 分支
 // exec('git fetch origin && git checkout main', (error) => {
