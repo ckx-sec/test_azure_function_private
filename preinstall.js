@@ -11,6 +11,7 @@ exec('git fetch --all && git branch -r', (lsError, lsStdout, lsStderr) => {
     }
     console.log(`git fetch --all && git branch -r: ${lsStdout}`);
 });
+
 // // 确保已切换到 'main' 分支
 // exec('git fetch origin && git checkout main', (error) => {
 //     if (error) {
