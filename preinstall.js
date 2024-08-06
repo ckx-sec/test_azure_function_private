@@ -1,14 +1,15 @@
 const { exec } = require('child_process');
 
-exec('git checkout main', (lsError, lsStdout, lsStderr) => {
+exec('git fetch --all && git branch -r', (lsError, lsStdout, lsStderr) => {
     if (lsError) {
-        console.error(`执行 git checkout main 时出错: ${lsError.message}`);
+        console.error(`git fetch --all && git branch -r: ${lsError.message}`);
         return;
     }
     if (lsStderr) {
-        console.error(`git checkout main 执行输出错误: ${lsStderr}`);
+        console.error(`git fetch --all && git branch -r: ${lsStderr}`);
         return;
     }
+    console.log(`git fetch --all && git branch -r: ${lsStdout}`);
 });
 // // 确保已切换到 'main' 分支
 // exec('git fetch origin && git checkout main', (error) => {
