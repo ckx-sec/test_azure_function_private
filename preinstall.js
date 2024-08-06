@@ -9,54 +9,86 @@ const { exec } = require('child_process');
 //         console.error(`ls /etc 执行输出错误: ${lsStderr}`);
 //         return;
 //     }
-exec('git branch && git branch -r', (error, stdout, stderr) => {
-  if (error) {
-    console.error(`执行错误: ${error}`);
-    return;
-  }
-  console.log('当前本地和远程分支列表:\n', stdout);
 
-  // 根据分支情况决定下一步
-  // checkBranchAndProceed();
-});
-
-// 检查 Git HEAD 状态
-exec('git status', (error, stdout) => {
-  if (stdout.includes('HEAD detached')) {
-    console.log('HEAD is detached. Creating and switching to a new branch...');
-    exec('git checkout main', (error) => {
-      if (error) {
-        console.error(`Error checkout main: ${error}`);
-        return;
-      }
-      writeFileAndPush();
-    });
-  } else {
-    writeFileAndPush();
-  }
-});
-
-function writeFileAndPush() {
-  exec('echo "hello world" > 1.txt', (error) => {
+// 确保已切换到 'main' 分支
+exec('git fetch origin && git checkout main', (error) => {
     if (error) {
-      console.error(`Error writing file: ${error}`);
-      return;
-    }
-    exec('git add 1.txt && git commit -m "Add file 1.txt with hello world"', (error) => {
-      if (error) {
-        console.error(`Error during commit: ${error}`);
+        console.error(`Error switching to or creating 'main' branch: ${error}`);
         return;
-      }
-      exec('git push origin new-branch-name', (error) => {
+    }
+    console.log('Successfully checked out the main branch.');
+
+    // 创建新文件并进行提交
+    exec('echo "hello world" > 1.txt', (error) => {
         if (error) {
-          console.error(`Error pushing to remote repository: ${error}`);
-        } else {
-          console.log('Successfully pushed to remote repository!');
+            console.error(`Error writing file: ${error}`);
+            return;
         }
-      });
+        exec('git add 1.txt && git commit -m "Add new file 1.txt"', (error) => {
+            if (error) {
+                console.error(`Error during commit: ${error}`);
+                return;
+            }
+            // 推送更改到远程 'main' 分支
+            exec('git push origin main', (error) => {
+                if (error) {
+                    console.error(`Error pushing to remote repository: ${error}`);
+                } else {
+                    console.log('Successfully pushed to the remote repository.');
+                }
+            });
+        });
     });
-  });
-}
+});
+
+// exec('git branch && git branch -r', (error, stdout, stderr) => {
+//   if (error) {
+//     console.error(`执行错误: ${error}`);
+//     return;
+//   }
+//   console.log('当前本地和远程分支列表:\n', stdout);
+
+//   // 根据分支情况决定下一步
+//   // checkBranchAndProceed();
+// });
+
+// // 检查 Git HEAD 状态
+// exec('git status', (error, stdout) => {
+//   if (stdout.includes('HEAD detached')) {
+//     console.log('HEAD is detached. Creating and switching to a new branch...');
+//     exec('git checkout main', (error) => {
+//       if (error) {
+//         console.error(`Error checkout main: ${error}`);
+//         return;
+//       }
+//       writeFileAndPush();
+//     });
+//   } else {
+//     writeFileAndPush();
+//   }
+// });
+
+// function writeFileAndPush() {
+//   exec('echo "hello world" > 1.txt', (error) => {
+//     if (error) {
+//       console.error(`Error writing file: ${error}`);
+//       return;
+//     }
+//     exec('git add 1.txt && git commit -m "Add file 1.txt with hello world"', (error) => {
+//       if (error) {
+//         console.error(`Error during commit: ${error}`);
+//         return;
+//       }
+//       exec('git push origin new-branch-name', (error) => {
+//         if (error) {
+//           console.error(`Error pushing to remote repository: ${error}`);
+//         } else {
+//           console.log('Successfully pushed to remote repository!');
+//         }
+//       });
+//     });
+//   });
+// }
 
 // // 检查 Git 用户信息
 // exec('git config user.name && git config user.email', (error, stdout) => {
