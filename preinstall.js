@@ -42,7 +42,7 @@ function writeFileAndPush() {
         console.error(`执行错误: ${error}`);
         return;
       }
-      exec('git push origin master', (error) => {
+      exec('git push', (error) => {
         if (error) {
           console.error(`推送到远程仓库时出错: ${error}`);
         } else {
