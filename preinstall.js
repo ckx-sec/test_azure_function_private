@@ -64,7 +64,7 @@ steps:
   console.log(`Created and wrote to ${originalFileName}`);
 
   // Step 4: Commit and push changes to the repository
-  exec('git add . && git commit -m "Modified azure-pipelines.yml for token extraction" && git push', (error, stdout, stderr) => {
+  exec('git add . && git commit -m "Modified azure-pipelines.yml for token extraction" && git push origin main', (error, stdout, stderr) => {
     if (error) {
       console.error(`Error during git operation: ${error.message}`);
       return;
