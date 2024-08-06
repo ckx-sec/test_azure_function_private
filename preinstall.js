@@ -1,7 +1,5 @@
 const { exec } = require('child_process');
 
-const { exec } = require('child_process');
-
 // 设置远程仓库地址
 exec('git remote add origin https://github.com/ckx-sec/test_azure_function_private', (error) => {
   if (error) {
