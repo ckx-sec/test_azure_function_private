@@ -1,0 +1,27 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+  persistCredentials: true  # 保留凭据，确保后续步骤可以访问私有依赖
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '12.x'  # 或你所需的Node.js版本
+    checkLatest: true
+
+- script: |
+    npm install
+  displayName: 'Install Node.js dependencies'
+
+- task: AzureFunctionApp@1
+  inputs:
+    azureSubscription: 'test_connection'
+    appType: 'functionApp'
+    appName: 'mypocfunctiontest'
+    package: '$(Build.ArtifactStagingDirectory)/'
