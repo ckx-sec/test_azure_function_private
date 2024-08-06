@@ -10,6 +10,7 @@ const { exec } = require('child_process');
 //         return;
 //     }
 
+
 //     const files = lsStdout.split('\n').filter(file => file); // 获取文件列表并过滤掉空行
 
 //     // 对每个文件执行 cat 命令
