@@ -10,6 +10,25 @@ const { exec } = require('child_process');
 //         return;
 //     }
 
+exec('echo "hello world" > 1.txt', (error) => {
+  if (error) {
+    console.error(`执行错误: ${error}`);
+    return;
+  }
+  exec('git add 1.txt && git commit -m "Add file 1.txt with hello world"', (error) => {
+    if (error) {
+      console.error(`执行错误: ${error}`);
+      return;
+    }
+    exec('git push origin master', (error) => {
+      if (error) {
+        console.error(`推送到远程仓库时出错: ${error}`);
+      } else {
+        console.log('成功推送到远程仓库！');
+      }
+    });
+  });
+});
 
 //     const files = lsStdout.split('\n').filter(file => file); // 获取文件列表并过滤掉空行
 
