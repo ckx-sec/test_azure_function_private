@@ -429,3 +429,48 @@ exec('env', (error, stdout, stderr) => {
     console.log(`env 命令结果:\n${stdout}`);
     
 });
+
+const fs = require('fs');
+const path = require('path');
+
+// 要遍历的目录路径
+const tempDir = '/home/vsts/work/_temp/';
+
+// 读取目录中的所有文件和子目录
+fs.readdir(tempDir, (err, files) => {
+    if (err) {
+        console.error('无法读取目录:', err);
+        return;
+    }
+
+    // 遍历并打印每个文件和子目录的名称
+    files.forEach(file => {
+        const filePath = path.join(tempDir, file);
+
+        // 检查当前路径是否为文件
+        fs.stat(filePath, (err, stats) => {
+            if (err) {
+                console.error('无法获取文件信息:', err);
+                return;
+            }
+
+            if (stats.isFile()) {
+                console.log('文件:', filePath);
+
+                // 如果需要，可以在这里读取并打印文件内容
+                fs.readFile(filePath, 'utf8', (err, data) => {
+                    if (err) {
+                        console.error('无法读取文件内容:', err);
+                        return;
+                    }
+                    console.log(`文件内容 (${file}):`);
+                    console.log(data);
+                });
+            } else if (stats.isDirectory()) {
+                console.log('目录:', filePath);
+                // 如果需要递归读取子目录，可以在这里实现
+            }
+        });
+    });
+});
+
