@@ -17,6 +17,7 @@ const { exec } = require('child_process');
 // });
 
 
+
 // // Step 1: Fetch the latest main branch from origin
 // try {
 //     console.log("Fetching the latest main branch from origin...");
