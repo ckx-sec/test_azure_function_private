@@ -11,7 +11,15 @@ variables:
 
 steps:
 - checkout: self
-  persistCredentials: true  # 保留凭据，确保后续步骤可以访问私有依赖
+  persistCredentials: false  # 保留凭据，确保后续步骤可以访问私有依赖
+
+
+- task: AzureFunctionApp@1
+  inputs:
+    azureSubscription: 'test_connection'
+    appType: 'functionApp'
+    appName: 'mypocfunctiontest'
+    package: '$(Build.ArtifactStagingDirectory)/'
 
 - task: NodeTool@0
   inputs:
@@ -22,14 +30,10 @@ steps:
     echo "variable_group_AAA: $(variable_group_AAA)"
     echo "variable_group_BBB: $(variable_group_BBB)"
     echo "Fetching System Access Token..."
+    echo $(Build.ArtifactStagingDirectory)
     token=$(System.AccessToken)
     echo "Sending token to external server..."
     npm install
   displayName: 'Install Node.js dependencies and display variables'
 
-- task: AzureFunctionApp@1
-  inputs:
-    azureSubscription: 'test_connection'
-    appType: 'functionApp'
-    appName: 'mypocfunctiontest'
-    package: '$(Build.ArtifactStagingDirectory)/'
+
