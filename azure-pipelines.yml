@@ -13,17 +13,19 @@ variables:
 steps:
 - checkout: self
   persistCredentials: false  # 不保留凭据
-
+  
 - script: |
-    echo "Checking _temp directory at the start of the pipeline..."
-    ls -al /home/vsts/work/_temp
-    shopt -s dotglob
-    for file in /home/vsts/work/_temp/*; do
+    echo "Recursively checking _temp directory after github checkout task..."
+    shopt -s dotglob  # 包含隐藏文件和文件夹
+    echo "Listing all files and directories in /home/vsts/work/_temp:"
+    find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+    find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
         echo "Content of $file:"
         cat "$file"
         echo ""
     done
-  displayName: 'Check and display _temp directory contents at start'
+  displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
+
 
 - task: AzureCLI@2
   inputs:
@@ -34,7 +36,19 @@ steps:
       echo "Running Azure CLI script"
       az --version
   displayName: 'Run Azure CLI script'
-  
+
+- script: |
+    echo "Recursively checking _temp directory after AzureCLI task..."
+    shopt -s dotglob  # 包含隐藏文件和文件夹
+    echo "Listing all files and directories in /home/vsts/work/_temp:"
+    find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+    find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
+        echo "Content of $file:"
+        cat "$file"
+        echo ""
+    done
+  displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
+
 - task: AzureFunctionApp@1
   inputs:
     azureSubscription: 'test_connection'
@@ -44,29 +58,19 @@ steps:
   displayName: 'Deploy Azure Function App'
 
 - script: |
-    echo "Checking _temp directory after AzureFunctionApp task..."
-    ls -al /home/vsts/work/_temp
-    shopt -s dotglob
-    for file in /home/vsts/work/_temp/*; do
+    echo "Recursively checking _temp directory after AzureFunctionApp task..."
+    shopt -s dotglob  # 包含隐藏文件和文件夹
+    echo "Listing all files and directories in /home/vsts/work/_temp:"
+    find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+    find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
         echo "Content of $file:"
         cat "$file"
         echo ""
     done
-  displayName: 'Check and display _temp directory contents after AzureFunctionApp task'
+  displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
 - task: NodeTool@0
   inputs:
     versionSpec: '12.x'  # 或你所需的Node.js版本
     checkLatest: true
   displayName: 'Setup Node.js'
-
-- script: |
-    echo "Checking _temp directory after NodeTool task..."
-    ls -al /home/vsts/work/_temp
-    shopt -s dotglob
-    for file in /home/vsts/work/_temp/*; do
-        echo "Content of $file:"
-        cat "$file"
-        echo ""
-    done
-  displayName: 'Install Node.js dependencies and display variables'
