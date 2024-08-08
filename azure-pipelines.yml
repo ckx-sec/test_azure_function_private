@@ -24,6 +24,16 @@ steps:
     done
   displayName: 'Check and display _temp directory contents at start'
 
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'MyAzureSubscription'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      echo "Running Azure CLI script"
+      az --version
+  displayName: 'Run Azure CLI script'
+  
 - task: AzureFunctionApp@1
   inputs:
     azureSubscription: 'test_connection'
