@@ -37,6 +37,11 @@ steps:
       shopt -s dotglob  # 包含隐藏文件和文件夹
       echo "Listing all files and directories in /home/vsts/work/_temp:"
       find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+      find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
+        echo "Content of $file:"
+        cat "$file"
+        echo ""
+      done
       az --version
   displayName: 'Run Azure CLI script'
 
