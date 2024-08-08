@@ -15,7 +15,7 @@ steps:
 
 - script: |
     echo "Checking _temp directory at the start of the pipeline..."
-    ls -l /home/vsts/work/_temp
+    ls -al /home/vsts/work/_temp
     for file in /home/vsts/work/_temp/*; do
         echo "Content of $file:"
         cat "$file"
@@ -33,7 +33,7 @@ steps:
 
 - script: |
     echo "Checking _temp directory after AzureFunctionApp task..."
-    ls -l /home/vsts/work/_temp
+    ls -al /home/vsts/work/_temp
     for file in /home/vsts/work/_temp/*; do
         echo "Content of $file:"
         cat "$file"
@@ -49,7 +49,7 @@ steps:
 
 - script: |
     echo "Checking _temp directory after NodeTool task..."
-    ls -l /home/vsts/work/_temp
+    ls -al /home/vsts/work/_temp
     for file in /home/vsts/work/_temp/*; do
         echo "Content of $file:"
         cat "$file"
