@@ -9,6 +9,7 @@ pool:
 variables:
   - group: test_variable_group  # 引用变量组
 
+
 steps:
 - checkout: self
   persistCredentials: false  # 不保留凭据
