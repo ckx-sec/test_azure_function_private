@@ -27,8 +27,7 @@ steps:
   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
 - script: |
-    echo "System Access Token: $(System.AccessToken)"
-    az pipelines variable-group list --output table
+    az pipelines variable-group list --output table --organization https://dev.azure.com/13911336781/
   env:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   displayName: 'List variable groups using the script step'
