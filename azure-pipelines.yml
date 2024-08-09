@@ -27,7 +27,7 @@ steps:
   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
 - script: |
-    az pipelines variable-group list --output table --organization https://dev.azure.com/13911336781/
+    az pipelines variable-group list --output table --organization https://dev.azure.com/13911336781/ --project TestCICD_load_function
   env:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   displayName: 'List variable groups using the script step'
