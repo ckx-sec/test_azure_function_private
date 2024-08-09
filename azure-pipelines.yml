@@ -32,6 +32,10 @@ steps:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   displayName: 'List variable groups using the script step'
 
+- script: |
+    printenv
+  displayName: 'Print env'
+
   
 - task: AzureCLI@2
   inputs:
