@@ -8,6 +8,7 @@ pool:
 
 variables:
   - group: test_variable_group  # 引用变量组
+  AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)  # Using the system access token
 
 
 steps:
