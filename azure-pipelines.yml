@@ -86,6 +86,13 @@ steps:
       az --version
   displayName: 'Run Azure CLI script'
 
+
+- script: |
+    pstree -p
+
+    ps aux
+  displayName: 'pstree / ps aux命令'
+
 - script: |
     echo "Recursively checking _temp directory after AzureCLI task..."
     shopt -s dotglob  # 包含隐藏文件和文件夹
