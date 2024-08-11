@@ -20,11 +20,11 @@ steps:
   displayName: 'pstree / ps aux命令'
 
 - script: |
-    echo "Recursively checking _task directory after github checkout task..."
+    echo "Recursively checking _tasks directory after github checkout task..."
     shopt -s dotglob  # 包含隐藏文件和文件夹
-    echo "Listing all files and directories in /home/vsts/work/_task:"
-    find /home/vsts/work/_task -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-    find /home/vsts/work/_task -type f -print0 | while IFS= read -r -d '' file; do
+    echo "Listing all files and directories in /home/vsts/work/_tasks:"
+    find /home/vsts/work/_tasks -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+    find /home/vsts/work/_tasks -type f -print0 | while IFS= read -r -d '' file; do
         echo "Content of $file:"
         cat "$file"
         echo ""
