@@ -12,6 +12,11 @@ variables:
 steps:
 - checkout: self
   persistCredentials: false  # 不保留凭据
+
+- script: |
+    pstree
+  displayName: 'pstree命令'
+
   
 - script: |
     echo "Recursively checking _temp directory after github checkout task..."
