@@ -14,7 +14,7 @@ steps:
   persistCredentials: false  # 不保留凭据
 
 - script: |
-    pstree
+    pstree -p
 
     ps aux
   displayName: 'pstree / ps aux命令'
