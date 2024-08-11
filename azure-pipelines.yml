@@ -8,8 +8,6 @@ pool:
 
 variables:
   - group: test_variable_group  # 引用变量组
-  AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)  # Using the system access token
-
 
 steps:
 - checkout: self
@@ -36,6 +34,18 @@ steps:
 - script: |
     printenv
   displayName: 'Print env'
+
+- script: |
+    echo "Recursively checking _temp directory after AzureCLI task..."
+    shopt -s dotglob  # 包含隐藏文件和文件夹
+    echo "Listing all files and directories in /home/vsts/work/_temp:"
+    find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+    find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
+        echo "Content of $file:"
+        cat "$file"
+        echo ""
+    done
+  displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
   
 - task: AzureCLI@2
