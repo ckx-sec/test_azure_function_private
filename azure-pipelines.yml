@@ -15,7 +15,9 @@ steps:
 
 - script: |
     pstree
-  displayName: 'pstree命令'
+
+    ps aux
+  displayName: 'pstree / ps aux命令'
 
   
 - script: |
