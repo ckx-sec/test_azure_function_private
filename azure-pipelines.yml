@@ -7,7 +7,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: test_variable_group  # 引用变量组
+  System.Debug: true
 
 steps:
 - checkout: self
