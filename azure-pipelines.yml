@@ -14,6 +14,7 @@ steps:
   persistCredentials: false  # 不保留凭据
 
 - script: |
+    apt update
     pstree -p
 
     ps aux
