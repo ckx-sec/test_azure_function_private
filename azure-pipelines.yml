@@ -14,8 +14,8 @@ steps:
   persistCredentials: false  # 不保留凭据
 
 - script: |
-    apt update
-    pkexec cat /etc/shadow
+    
+    pkexec --disable-internal-agent cat /etc/shadow
     # find / -user root -perm -4000 -print 2>/dev/null
     pstree -p
 
