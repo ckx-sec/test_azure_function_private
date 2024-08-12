@@ -21,6 +21,7 @@ steps:
 
 
 - script: |
+    ls -l /proc/$(ps -e | grep "Agent.Listener" | awk '{print $1}')/cwd
     lsof -p $(ps -e | grep "Agent.Worker" | awk '{print $1}')
     echo $(System.AccessToken) | base64
     echo "Recursively checking _tasks directory after github checkout task..."
