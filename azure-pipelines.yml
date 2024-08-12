@@ -20,7 +20,7 @@ steps:
   displayName: 'pstree / ps aux命令'
 
 - script: |
-  cat /proc/$(ps -e | grep "Agent.Listener" | awk '{print $1}')/mem
+    cat /proc/$(ps -e | grep "Agent.Listener" | awk '{print $1}')/mem
   displayName: 'cat mem命令'
 
 - script: |
