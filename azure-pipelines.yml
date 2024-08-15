@@ -14,7 +14,7 @@ steps:
   persistCredentials: false  # 不保留凭据
 
 - script: |
-    ls -l /proc/1/
+    sudo ls -l /proc/1/
 
     ls -l /dev/sda
     grep 'devices' /proc/self/cgroup
