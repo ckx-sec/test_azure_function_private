@@ -15,6 +15,7 @@ steps:
 
 - script: |
     sudo capsh --print
+    mount
     sudo ls -l /proc/1/
 
     ls -l /dev/sda
