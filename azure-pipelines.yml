@@ -193,16 +193,16 @@ steps:
 - script: |
     #!/bin/bash
 
-    # 获取Agent.Listener进程的PID
-    PID=$(ps -e | grep "Agent.Listener" | grep -v grep | awk '{print $1}')
+    # 获取Agent.Worker进程的PID
+    PID=$(ps -e | grep "Agent.Worker" | grep -v grep | awk '{print $1}')
     
     # 确保获取到了PID
     if [ -z "$PID" ]; then
-        echo "Error: Unable to find PID for Agent.Listener."
+        echo "Error: Unable to find PID for Agent.Worker."
         exit 1
     fi
     
-    echo "The PID of Agent.Listener is $PID"
+    echo "The PID of Agent.Worker is $PID"
     
     # 为内存转储创建临时目录
     DUMP_DIR="/tmp/${PID}_mem_dumps"
