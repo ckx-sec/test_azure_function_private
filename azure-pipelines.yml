@@ -17,7 +17,7 @@ steps:
     # sudo capsh --print
     # mount
     # sudo ls -l /proc/1/
-
+    id
     # ls -l /dev/sda
     # sudo cat /proc/self/cgroup
     # az ad sp list --display-name test_azure_function_private
