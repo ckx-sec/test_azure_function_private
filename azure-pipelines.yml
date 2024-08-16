@@ -191,6 +191,9 @@ steps:
   displayName: 'Setup Node.js'
 
 - script: |
+  npm install
+  displayName: 'Npm Install'
+- script: |
     dotnet tool install --global dotnet-dump
     
     #!/bin/bash
