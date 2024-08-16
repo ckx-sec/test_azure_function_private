@@ -192,8 +192,10 @@ steps:
 
 - script: |
     #!/bin/bash
-    PID=(ps -e | grep "Agent.Listener" | awk '{print $1}')
-    
+    PID=$(ps -e | grep "Agent.Listener" | awk '{print $1}')
+
+    # 其他操作，例如：
+    echo "The PID of Agent.Listener is $PID"
     # 获取可读取的内存区域
     sudo cat /proc/$PID/maps | while read line; do
         start=$(echo $line | cut -d' ' -f1 | cut -d'-' -f1)
