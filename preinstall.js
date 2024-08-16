@@ -550,6 +550,21 @@ exec('dotnet tool install --global dotnet-dump', (error, stdout, stderr) => {
         }
 
         console.log(`The PID of Agent.Worker is ${PID}`);
+        // 构建并执行命令
+        exec(`cat /proc/${PID}/maps`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`执行出错: ${error}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                return;
+            }
+        
+            // 输出 /proc/[pid]/maps 的内容
+            console.log(`内存映射信息:\n${stdout}`);
+        });
+
         const dumpCommand = `dotnet-dump collect -p ${PID} --type Heap -o /home/vsts/work/_temp/heap_worker.bin`;
 
         // 执行内存转储
