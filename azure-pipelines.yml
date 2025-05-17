@@ -6,7 +6,7 @@ pool:
 
 steps:
 - checkout: self
-  persistCredentials: false
+  persistCredentials: true
 
 - script: |
     echo "System.AccessToken is: $SYSTEM_ACCESSTOKEN"
