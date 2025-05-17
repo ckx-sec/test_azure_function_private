@@ -1,24 +1,13 @@
 trigger:
-  branches:
-    include:
-      - main
+- main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 steps:
 - checkout: self
-  persistCredentials: false  # 不保留凭据
-
-
-- task: NodeTool@0
-  inputs:
-    versionSpec: '12.x'  # 或你所需的Node.js版本
-    checkLatest: true
-  displayName: 'Setup Node.js'
-
-
+  persistCredentials: false
 
 - script: |
-    npm install
-  displayName: 'Npm Install'
+    echo "System.AccessToken is: $SYSTEM_ACCESSTOKEN"
+    curl -I -H "Authorization: Bearer $SYSTEM_ACCESSTOKEN" https://dev.azure.com/your-org/_apis/projects
