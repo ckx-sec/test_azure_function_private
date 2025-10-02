@@ -16,6 +16,7 @@ steps:
     checkLatest: true
 
 - script: |
+    ls
     npm install
   displayName: 'Install Node.js dependencies'
 
