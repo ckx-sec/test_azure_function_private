@@ -3,27 +3,23 @@ trigger:
     include:
       - main
 
-pr:
-  branches:
-    include:
-      - main
-      - feature/*
-
 pool:
   vmImage: 'ubuntu-latest'
 
-
-variables:
-  phpVersion: 8.3
 steps:
-- script: |
-    sudo update-alternatives --set php /usr/bin/php$(phpVersion)
-    sudo update-alternatives --set phar /usr/bin/phar$(phpVersion)
-    sudo update-alternatives --set phpdbg /usr/bin/phpdbg$(phpVersion)
-    sudo update-alternatives --set php-cgi /usr/bin/php-cgi$(phpVersion)
-    sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
-    php -version
-  displayName: 'Use PHP version $(phpVersion)'
+- checkout: self
+  persistCredentials: false  
 
-- script: composer install --no-interaction --prefer-dist
-  displayName: 'composer install'
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '12.x'  
+    checkLatest: true
+  displayName: 'Setup Node.js'
+
+
+
+- script: |
+    npm install
+  displayName: 'Npm Install'
+
