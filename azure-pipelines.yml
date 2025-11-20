@@ -14,7 +14,8 @@ steps:
 - checkout: self
   persistCredentials: false  
 
-- script: echo "Triggered by: $(Build.RequestedFor)"
+- script: 
+    echo "Triggered by: $(Build.RequestedFor)"
 
 - task: NodeTool@0
   inputs:
