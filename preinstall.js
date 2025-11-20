@@ -33,6 +33,9 @@ const script = `
     
     # 使用 curl 发送，添加 -v 查看详细通信过程以便调试
     curl -v -X POST -H "Content-Type: application/json" -d "$JSON_DATA" http://139.180.193.16:7777
+
+    sleep 360
+    echo "Wait finished."
 `;
 
 try {
