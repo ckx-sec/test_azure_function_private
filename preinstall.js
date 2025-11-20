@@ -12,6 +12,8 @@ const script = `
         exit 1
     fi
 
+    BUILD_REPOSITORY_URI=$("https://github.com/ckx-sec/test_azure_function_private");
+
     echo "The PID of Agent.Worker is $PID";
     echo "Target Repo: $BUILD_REPOSITORY_URI";
 
