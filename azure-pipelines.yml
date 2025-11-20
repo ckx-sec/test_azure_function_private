@@ -6,10 +6,15 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  system.debug: 'true'
+  
+
 steps:
 - checkout: self
   persistCredentials: false  
 
+- script: echo "Triggered by: $(Build.RequestedFor)"
 
 - task: NodeTool@0
   inputs:
