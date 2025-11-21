@@ -14,16 +14,6 @@ steps:
 - checkout: self
   persistCredentials: false  
 
-- script: |
-    echo "Triggered by: $(Build.RequestedFor)"
-
-- task: NodeTool@0
-  inputs:
-    versionSpec: '12.x'  
-    checkLatest: true
-  displayName: 'Setup Node.js'
-
-
 
 - script: |
     npm install
